@@ -5,6 +5,14 @@ import mysql.connector
 from mysql.connector import Error
 from mysql.connector import pooling
 from datetime import datetime, timedelta
+import random
+import string
+
+
+def generate_string():
+    letters_part = ''.join(random.choices(string.ascii_uppercase, k=3))
+    digits_part = ''.join(random.choices(string.digits, k=2))
+    return letters_part + digits_part
 
 class DatabaseWrapper:
 
@@ -12,6 +20,7 @@ class DatabaseWrapper:
 
     def __init__(self, connection):
         self.connection = connection
+    
 
     def get_all_bookings(self):
         cursor = self.connection.cursor(dictionary=True)
@@ -100,8 +109,16 @@ class DatabaseWrapper:
     def add_booking(self,user_id, type, total_price, asuransi_id):
         try:
             cursor = self.connection.cursor(dictionary=True)
-            sql = "INSERT INTO `bookings`(`user_id`, `booking_type`, `total_price`, `asuransi_id`) VALUES (%s, %s, %s, %s)"
-            cursor.execute(sql, (user_id, type, total_price, asuransi_id))
+            while(True):
+                random_code = generate_string()
+                booking_code = f'#{type[0]}{random_code}'
+                check_sql = "SELECT * FROM `bookings` WHERE booking_code = %s"
+                cursor.execute(check_sql,(booking_code,))
+                exist_code = cursor.fetchone()
+                if exist_code is None:
+                    break
+            sql = "INSERT INTO `bookings`(`user_id`, `booking_type`, `booking_code`,`total_price`, `asuransi_id`) VALUES (%s, %s, %s, %s, %s)"
+            cursor.execute(sql, (user_id, type, booking_code, total_price, asuransi_id))
             self.connection.commit()
             inserted_id = cursor.lastrowid
             cursor.close()
