@@ -166,7 +166,16 @@ class GatewayService:
         except Exception as e:
             error_message = str(e)
             return 500, json.dumps({'error': error_message})
-
+    @http("GET", "/reviews/<string:service_type>")
+    def get_reviews_and_average(self, request, service_type):
+        valid_service_types = ["hotel", "airline", "attraction", "car_rental", "travel_agent"]
+        
+        if service_type not in valid_service_types:
+            return 400, json.dumps({"error": "Invalid service type"})
+        
+        result = self.review_rpc.get_reviews_and_average_by_service_type(service_type)
+        return 200, json.dumps(result)
+    
     @http('POST', '/refund')
     def trigger_refund(self, request):
         try:

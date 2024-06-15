@@ -6,7 +6,7 @@ from mysql.connector import Error
 from mysql.connector import pooling
 from datetime import datetime, timedelta
 import random
-import string
+import string, mean
 
 
 def generate_string():
@@ -275,7 +275,29 @@ class DatabaseWrapper:
         except Exception as e:
             error_message = str(e)
             return {'error': error_message, 'status': 500}
+    def get_reviews_by_service_type(self, service_type):
+        connection = self.get_connection(service_type)
+        cursor = connection.cursor(dictionary=True)
+        sql = "SELECT * FROM reviews"
+        cursor.execute(sql)
+        reviews = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        return reviews
 
+    def get_average_rating_by_service_type(self, service_type):
+        connection = self.get_connection(service_type)
+        cursor = connection.cursor(dictionary=True)
+        sql = "SELECT rating FROM reviews"
+        cursor.execute(sql)
+        ratings = [row['rating'] for row in cursor.fetchall()]
+        cursor.close()
+        connection.close()
+        if ratings:
+            return mean(ratings)
+        else:
+            return 0
+        
     # Refund related methods
     def trigger_refund(self, booking_id, user_id, refund_reason):
         try:
@@ -348,9 +370,6 @@ class DatabaseWrapper:
         except Exception as e:
             error_message = str(e)
             return {'error': error_message, 'status': 500}
-        
-        
-        
         
     def check_booking_exists(self, booking_id):
         try:

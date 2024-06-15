@@ -28,3 +28,22 @@ class ReviewService:
         if response:
             self.database.set_review_as_edited(review_id)
         return response
+    
+    @rpc
+    def get_reviews_by_service_type(self, service_type):
+        reviews = self.database.get_reviews_by_service_type(service_type)
+        return reviews
+
+    @rpc
+    def get_average_rating_by_service_type(self, service_type):
+        average_rating = self.database.get_average_rating_by_service_type(service_type)
+        return average_rating
+
+    @rpc
+    def get_reviews_and_average_by_service_type(self, service_type):
+        reviews = self.get_reviews_by_service_type(service_type)
+        average_rating = self.get_average_rating_by_service_type(service_type)
+        return {
+            "reviews": reviews,
+            "average_rating": average_rating
+        }
