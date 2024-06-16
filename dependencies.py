@@ -7,6 +7,7 @@ from mysql.connector import pooling
 from datetime import datetime, timedelta
 import random
 import string, mean
+# from statistics import mean
 
 
 def generate_string():
@@ -33,6 +34,28 @@ class DatabaseWrapper:
                 'user_id': row['user_id'],
                 'booking_date': row['booking_date'].strftime("%Y-%m-%d %H:%M:%S"),
                 'status': row['status'],
+                'booking_code': row['booking_code'],
+                'provider_name': row['provider_name'],
+                'booking_type': row['booking_type'],
+                'total_price': float(row['total_price']),
+                'asuransi_id': row['asuransi_id']
+            })
+        cursor.close()
+        return result
+    
+    def get_booking_by_id(self, user_id):
+        cursor = self.connection.cursor(dictionary=True)
+        result = []
+        sql = "SELECT * FROM bookings WHERE user_id = %s"
+        cursor.execute(sql,(user_id,))
+        for row in cursor.fetchall():
+            result.append({
+                'id': row['id'],
+                'booking_date': row['booking_date'].strftime("%Y-%m-%d %H:%M:%S"),
+                'status': row['status'],
+                'booking_code': row['booking_code'],
+                'provider_name': row['provider_name'],
+                'booking_type': row['booking_type'],
                 'total_price': float(row['total_price']),
                 'asuransi_id': row['asuransi_id']
             })
@@ -48,24 +71,37 @@ class DatabaseWrapper:
                 sql = "INSERT INTO `booking_hotels`(`booking_id`, `room_type`, `check_in_date`, `check_out_date`, `number_of_rooms`) VALUES (%s, %s, %s, %s, %s)"
                 cursor.execute(sql, (result['new_inserted_id'],room_type,check_in_date,check_out_date,number_of_rooms))
                 self.connection.commit()
+                data = {}
+                data['type'] = type
+                data['provider_name'] = provider_name
+                data['check_in_date'] = check_in_date
+                data['check_out_date'] = check_out_date
+                data['number_of_rooms'] = number_of_rooms
+                data['booking_code'] = result['booking_code']
                 cursor.close()
-                return {'message': 'Booking created successfully','status': 200}
+                return {'message': 'Booking created successfully','status': 200, 'data': data}
             except Exception as e:
                 error_message = str(e)
                 return {'error': error_message}
         else:
             return {'error': result['error']}
         
-    def add_booking_airline(self,user_id, type, total_price, asuransi_id, flight_id, provider_name):
+    def add_booking_airline(self,user_id, type, total_price, asuransi_id, flight_id, flight_date,provider_name):
         result = self.add_booking(user_id=user_id,type=type,total_price=total_price,asuransi_id=asuransi_id, provider_name=provider_name)
         if(result['success']):
             try:
                 cursor = self.connection.cursor(dictionary=True)
-                sql = "INSERT INTO `booking_airlines`(`booking_id`, `flight_id`) VALUES (%s, %s)"
-                cursor.execute(sql, (result['new_inserted_id'],flight_id))
+                sql = "INSERT INTO `booking_airlines`(`booking_id`, `flight_id` ,`flight_date`) VALUES (%s, %s, %s)"
+                cursor.execute(sql, (result['new_inserted_id'],flight_id,flight_date))
                 self.connection.commit()
+                data = {}
+                data['type'] = type
+                data['provider_name'] = provider_name
+                data['flight_id'] = flight_id
+                data['flight_date'] = flight_date
+                data['booking_code'] = result['booking_code']
                 cursor.close()
-                return {'message': 'Booking created successfully','status': 200}
+                return {'message': 'Booking created successfully','status': 200, "data": data}
             except Exception as e:
                 error_message = str(e)
                 return {'error': error_message}
@@ -81,8 +117,18 @@ class DatabaseWrapper:
                 sql = "INSERT INTO `booking_rentals`(`booking_id`, `car_id`, `pickup_date`, `return_date`, `pickup_location`, `return_location`, `is_with_driver`) VALUES (%s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(sql, (result['new_inserted_id'],car_id,pick_up_date,return_date,pick_up_location,return_location,is_with_driver))
                 self.connection.commit()
+                data = {}
+                data['type'] = type
+                data['provider_name'] = provider_name
+                data['car_id'] = car_id
+                data['pick_up_date'] = pick_up_date
+                data['return_date'] = return_date
+                data['pick_up_location'] = pick_up_location
+                data['return_location'] = return_location
+                data['is_with_driver'] = is_with_driver
+                data['booking_code'] = result['booking_code']
                 cursor.close()
-                return {'message': 'Booking created successfully','status': 200}
+                return {'message': 'Booking created successfully','status': 200 , 'data': data}
             except Exception as e:
                 error_message = str(e)
                 return {'error': error_message}
@@ -98,8 +144,15 @@ class DatabaseWrapper:
                 sql = "INSERT INTO `booking_attractions`(`booking_id`, `paket_attraction_id`, `visit_date`, `number_of_tickets`) VALUES (%s, %s, %s, %s)"
                 cursor.execute(sql, (result['new_inserted_id'],paket_attraction_id,visit_date,number_of_tickets))
                 self.connection.commit()
+                data = {}
+                data['type'] = type
+                data['provider_name'] = provider_name
+                data['paket_attraction_id'] = paket_attraction_id
+                data['visit_date'] = visit_date
+                data['number_of_tickets'] = number_of_tickets
+                data['booking_code'] = result['booking_code']
                 cursor.close()
-                return {'message': 'Booking created successfully','status': 200}
+                return {'message': 'Booking created successfully','status': 200, 'data': data}
             except Exception as e:
                 error_message = str(e)
                 return {'error': error_message}
@@ -122,7 +175,7 @@ class DatabaseWrapper:
             self.connection.commit()
             inserted_id = cursor.lastrowid
             cursor.close()
-            return {'success': True, 'new_inserted_id': inserted_id}
+            return {'success': True, 'new_inserted_id': inserted_id, 'booking_code' : booking_code}
         except Exception as e:
             error_message = str(e)
             return {'error': error_message, 'success': False}

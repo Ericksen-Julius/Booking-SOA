@@ -10,8 +10,8 @@ class GatewayService:
 
     header = {
         "Access-Control-Allow-Origin": "*",
-         "Access-Control-Allow-Methods": "*",
-         "Access-Control-Allow-Headers": "*",     
+        "Access-Control-Allow-Methods": "*",     
+        "Access-Control-Allow-Headers": "*",     
     }
 
     booking_rpc = RpcProxy('booking_service')
@@ -20,6 +20,19 @@ class GatewayService:
     def get_all_bookings(self, request):
         bookings = self.booking_rpc.get_all_bookings()
         return (200, self.header, json.dumps(bookings))
+    
+    @http('GET', '/booking/<int:user_id>')
+    def get_booking_by_id(self, request, user_id):
+        try:
+            # return 200, str(cuy)
+            bookings = self.booking_rpc.get_booking_by_id(user_id=user_id)
+            
+            if bookings:
+                return 200, self.header, json.dumps(bookings)
+            return 400, self.header ,"Booking not found"
+        except Exception as e:
+            return 500, str(e)
+        
     
     @http('POST', '/booking')
     def add_booking(self, request):
@@ -42,8 +55,9 @@ class GatewayService:
                 )
             elif(type == "Airline"):
                 flight_id = booking_data.get('flight_id')
+                flight_date = booking_data.get('flight_date')
                 response = self.booking_rpc.add_booking_airline(
-                    user_id=user_id, type=type, total_price=total_price, asuransi_id=asuransi_id, flight_id=flight_id, provider_name=provider_name
+                    user_id=user_id, type=type, total_price=total_price, asuransi_id=asuransi_id,flight_id=flight_id, flight_date=flight_date, provider_name=provider_name
                 )
             elif(type == "Rental"):
                 car_id = booking_data.get('car_id')
@@ -66,7 +80,7 @@ class GatewayService:
                     paket_attraction_id=paket_attraction_id, visit_date=visit_date, number_of_tickets=number_of_tickets
                 )  
 
-            return (response['status'],response['message'],self.header)
+            return (response['status'],self.header ,json.dumps(response))
         except Exception as e:
             error_message = str(e)
             return 500,json.dumps({'error': error_message})
@@ -79,7 +93,7 @@ class GatewayService:
             status = json_data.get('status')
             response = self.booking_rpc.edit_booking(status=status, booking_id=booking_id)
 
-            return (response['status'],response['message'],self.header)
+            return (response['status'],self.header,response['message'])
 
         except Exception as e:
             error_message = str(e)

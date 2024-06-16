@@ -12,6 +12,11 @@ class BookingService:
     def get_all_bookings(self):
         bookings = self.database.get_all_bookings()
         return bookings
+
+    @rpc
+    def get_booking_by_id(self, user_id):
+        bookings = self.database.get_booking_by_id(user_id = user_id)
+        return bookings
     
     @rpc
     def add_booking_hotel(self,  user_id, type, total_price, asuransi_id, provider_name,
@@ -22,9 +27,9 @@ class BookingService:
         )
         return response
     @rpc
-    def add_booking_airline(self,  user_id, type, total_price, asuransi_id, flight_id, provider_name):
+    def add_booking_airline(self,  user_id, type, total_price, asuransi_id, flight_id,flight_date, provider_name):
         response = self.database.add_booking_airline(
-        user_id=user_id, type=type, total_price=total_price, asuransi_id=asuransi_id, flight_id=flight_id, provider_name=provider_name
+        user_id=user_id, type=type, total_price=total_price, asuransi_id=asuransi_id, flight_id=flight_id, flight_date=flight_date,provider_name=provider_name
         )
         return response
     @rpc
