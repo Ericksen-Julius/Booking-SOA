@@ -32,6 +32,15 @@ class GatewayService:
             return 400, self.header ,"Booking not found"
         except Exception as e:
             return 500, str(e)
+    @http('GET', '/bookingDetails/<int:booking_id>')
+    def get_booking_details(self, request, booking_id):
+        try:
+            bookings = self.booking_rpc.get_booking_details(booking_id=booking_id)
+            if bookings:
+                return 200, self.header, json.dumps(bookings)
+            return 400, self.header ,"Booking not found"
+        except Exception as e:
+            return 500, str(e)
         
     
     @http('POST', '/booking')
@@ -42,6 +51,7 @@ class GatewayService:
             user_id = booking_data.get('user_id')
             type = booking_data.get('type')
             total_price = booking_data.get('total_price')
+            service_id = booking_data.get('service_id')
             provider_name = booking_data.get('provider_name')
             asuransi_id = booking_data.get('asuransi_id') if 'asuransi_id' in booking_data else None
             if(type == "Hotel"):
@@ -51,13 +61,15 @@ class GatewayService:
                 number_of_rooms = booking_data.get('number_of_rooms')
                 response = self.booking_rpc.add_booking_hotel(
                     user_id=user_id, type=type, total_price=total_price, asuransi_id=asuransi_id, provider_name=provider_name,
-                    room_type=room_type, check_in_date=check_in_date, check_out_date=check_out_date,number_of_rooms=number_of_rooms
+                    room_type=room_type, check_in_date=check_in_date, check_out_date=check_out_date,number_of_rooms=number_of_rooms,
+                    service_id=service_id
                 )
             elif(type == "Airline"):
                 flight_id = booking_data.get('flight_id')
                 flight_date = booking_data.get('flight_date')
                 response = self.booking_rpc.add_booking_airline(
-                    user_id=user_id, type=type, total_price=total_price, asuransi_id=asuransi_id,flight_id=flight_id, flight_date=flight_date, provider_name=provider_name
+                    user_id=user_id, type=type, total_price=total_price, asuransi_id=asuransi_id,flight_id=flight_id, flight_date=flight_date,
+                    provider_name=provider_name, service_id=service_id
                 )
             elif(type == "Rental"):
                 car_id = booking_data.get('car_id')
@@ -69,7 +81,7 @@ class GatewayService:
                 response = self.booking_rpc.add_booking_rental(
                     user_id=user_id, type=type, total_price=total_price, asuransi_id=asuransi_id, provider_name=provider_name,
                     car_id=car_id, pick_up_date=pick_up_date, return_date=return_date,pick_up_location=pick_up_location,return_location=return_location,
-                    is_with_driver=is_with_driver
+                    is_with_driver=is_with_driver,service_id=service_id
                 )  
             else:
                 paket_attraction_id = booking_data.get('paket_attraction_id')
@@ -77,7 +89,7 @@ class GatewayService:
                 number_of_tickets = booking_data.get('number_of_tickets')
                 response = self.booking_rpc.add_booking_attraction(
                     user_id=user_id, type=type, total_price=total_price, asuransi_id=asuransi_id, provider_name=provider_name,
-                    paket_attraction_id=paket_attraction_id, visit_date=visit_date, number_of_tickets=number_of_tickets
+                    paket_attraction_id=paket_attraction_id, visit_date=visit_date, number_of_tickets=number_of_tickets,service_id=service_id
                 )  
 
             return (response['status'],self.header ,json.dumps(response))

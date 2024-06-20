@@ -7,6 +7,7 @@ from mysql.connector import pooling
 from datetime import datetime, timedelta
 import random
 import string, mean
+from datetime import date
 # from statistics import mean
 
 
@@ -61,10 +62,123 @@ class DatabaseWrapper:
             })
         cursor.close()
         return result
+    
+    def get_booking_details(self, booking_id):    
+        try:    
+            cursor = self.connection.cursor(dictionary=True)
+            sql = "SELECT booking_type FROM bookings WHERE id = %s"
+            cursor.execute(sql,(booking_id,))
+            result = cursor.fetchone()
+            if (result and result['booking_type'] == "Hotel"):
+                sql = """
+                SELECT 
+                    a.service_id,
+                    b.room_type,
+                    a.provider_name,
+                    a.booking_code,
+                    b.check_in_date,
+                    b.check_out_date,
+                    b.number_of_rooms,
+                    DATEDIFF(b.check_out_date, b.check_in_date) AS number_of_nights
+                FROM 
+                    bookings AS a
+                LEFT JOIN 
+                    booking_hotels AS b 
+                ON 
+                    a.id = b.booking_id 
+                WHERE 
+                    a.id = %s;
+                """
+                cursor.execute(sql,(booking_id,))
+                bookings = cursor.fetchone()
+                if bookings:
+                    if isinstance(bookings['check_in_date'], date):
+                        bookings['check_in_date'] = bookings['check_in_date'].isoformat()
+                    if isinstance(bookings['check_out_date'], date):
+                        bookings['check_out_date'] = bookings['check_out_date'].isoformat()
+            elif (result and result['booking_type'] == "Airline"):
+                sql = """
+                SELECT 
+                    a.service_id,
+                    a.booking_code,
+                    a.provider_name,
+                    a.asuransi_id,
+                    b.flight_id,
+                    b.flight_date
+                FROM 
+                    bookings AS a
+                LEFT JOIN 
+                    booking_airlines AS b 
+                ON 
+                    a.id = b.booking_id 
+                WHERE 
+                    a.id = %s;
+                """
+                cursor.execute(sql,(booking_id,))
+                bookings = cursor.fetchone()
+                if bookings:
+                    if isinstance(bookings['flight_date'], date):
+                        bookings['flight_date'] = bookings['flight_date'].isoformat()
+            elif (result and result['booking_type'] == "Rental"):
+                sql = """
+                SELECT 
+                    a.service_id,
+                    a.booking_code,
+                    a.provider_name,
+                    a.asuransi_id,
+                    b.pickup_date,
+                    b.return_date,
+                    b.car_id,
+                    b.pickup_location,
+                    b.return_location,
+                    b.is_with_driver
+                FROM 
+                    bookings AS a
+                LEFT JOIN 
+                    booking_rentals AS b 
+                ON 
+                    a.id = b.booking_id 
+                WHERE 
+                    a.id = %s;
+                """
+                cursor.execute(sql,(booking_id,))
+                bookings = cursor.fetchone()
+                if bookings:
+                    if isinstance(bookings['pickup_date'], date):
+                        bookings['pickup_date'] = bookings['pickup_date'].isoformat()
+                    if isinstance(bookings['return_date'], date):
+                        bookings['return_date'] = bookings['return_date'].isoformat()
+            elif (result and result['booking_type'] == "Attraction"):
+                sql = """
+                SELECT 
+                    a.service_id,
+                    a.booking_code,
+                    a.provider_name,
+                    b.visit_date,
+                    b.paket_attraction_id
+                FROM 
+                    bookings AS a
+                LEFT JOIN 
+                    booking_attractions AS b 
+                ON 
+                    a.id = b.booking_id 
+                WHERE 
+                    a.id = %s;
+                """
+                cursor.execute(sql,(booking_id,))
+                bookings = cursor.fetchone()
+                if bookings:
+                    if isinstance(bookings['visit_date'], date):
+                        bookings['visit_date'] = bookings['visit_date'].isoformat()
+            return {'booking details': bookings}
+        except Exception as e:
+                error_message = str(e)
+                return {'error': error_message}
+
 
     def add_booking_hotel(self,user_id, type, total_price, asuransi_id, provider_name,
-        room_type, check_in_date, check_out_date,number_of_rooms):
-        result = self.add_booking(user_id=user_id,type=type,total_price=total_price,asuransi_id=asuransi_id ,provider_name=provider_name)
+        room_type, check_in_date, check_out_date,number_of_rooms,service_id):
+        result = self.add_booking(user_id=user_id,type=type,total_price=total_price,asuransi_id=asuransi_id ,provider_name=provider_name,service_id=service_id)
         if(result['success']):
             try:
                 cursor = self.connection.cursor(dictionary=True)
@@ -86,8 +200,8 @@ class DatabaseWrapper:
         else:
             return {'error': result['error']}
         
-    def add_booking_airline(self,user_id, type, total_price, asuransi_id, flight_id, flight_date,provider_name):
-        result = self.add_booking(user_id=user_id,type=type,total_price=total_price,asuransi_id=asuransi_id, provider_name=provider_name)
+    def add_booking_airline(self,user_id, type, total_price, asuransi_id, flight_id, flight_date,provider_name,service_id):
+        result = self.add_booking(user_id=user_id,type=type,total_price=total_price,asuransi_id=asuransi_id, provider_name=provider_name,service_id=service_id)
         if(result['success']):
             try:
                 cursor = self.connection.cursor(dictionary=True)
@@ -109,8 +223,8 @@ class DatabaseWrapper:
             return {'error': result['error']}
         
     def add_booking_rental(self,user_id, type, total_price, asuransi_id, provider_name,car_id,pick_up_date,return_date,pick_up_location,
-        return_location,is_with_driver):
-        result = self.add_booking(user_id=user_id,type=type,total_price=total_price,asuransi_id=asuransi_id, provider_name=provider_name)
+        return_location,is_with_driver,service_id):
+        result = self.add_booking(user_id=user_id,type=type,total_price=total_price,asuransi_id=asuransi_id, provider_name=provider_name,service_id=service_id)
         if(result['success']):
             try:
                 cursor = self.connection.cursor(dictionary=True)
@@ -136,8 +250,8 @@ class DatabaseWrapper:
             return {'error': result['error']}
         
     def add_booking_attraction(self,user_id, type, total_price, asuransi_id, provider_name,
-        paket_attraction_id, visit_date, number_of_tickets):
-        result = self.add_booking(user_id=user_id,type=type,total_price=total_price,asuransi_id=asuransi_id, provider_name=provider_name)
+        paket_attraction_id, visit_date, number_of_tickets,service_id):
+        result = self.add_booking(user_id=user_id,type=type,total_price=total_price,asuransi_id=asuransi_id, provider_name=provider_name,service_id=service_id)
         if(result['success']):
             try:
                 cursor = self.connection.cursor(dictionary=True)
@@ -159,7 +273,7 @@ class DatabaseWrapper:
         else:
             return {'error': result['error']}
         
-    def add_booking(self,user_id, type, total_price, asuransi_id,provider_name):
+    def add_booking(self,user_id, type, total_price, asuransi_id,provider_name,service_id):
         try:
             cursor = self.connection.cursor(dictionary=True)
             while(True):
@@ -170,8 +284,8 @@ class DatabaseWrapper:
                 exist_code = cursor.fetchone()
                 if exist_code is None:
                     break
-            sql = "INSERT INTO `bookings`(`user_id`, `booking_type`, `booking_code`,`total_price`, `asuransi_id` ,`provider_name`) VALUES (%s,%s, %s, %s, %s, %s)"
-            cursor.execute(sql, (user_id, type, booking_code, total_price, asuransi_id, provider_name))
+            sql = "INSERT INTO `bookings`(`user_id`, `booking_type`, `booking_code`,`total_price`, `asuransi_id` ,`provider_name`, `service_id`) VALUES (%s,%s, %s, %s, %s, %s, %s)"
+            cursor.execute(sql, (user_id, type, booking_code, total_price, asuransi_id, provider_name, service_id))
             self.connection.commit()
             inserted_id = cursor.lastrowid
             cursor.close()
