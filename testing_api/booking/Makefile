@@ -1,7 +1,7 @@
 TAG = latest
 
 build-image:
-	docker build -t nameko/booking-services:$(TAG) ./services
+	docker build -t nameko/booking-services:$(TAG) ./booking
 
 docker-tag:
 	docker tag nameko/booking-services:$(TAG) \

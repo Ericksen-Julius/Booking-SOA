@@ -1,7 +1,7 @@
 TAG = latest
 
 build-image:
-	docker build -t nameko/review-services:$(TAG) ./services
+	docker build -t nameko/review-services:$(TAG) ./review
 
 docker-tag:
 	docker tag nameko/review-services:$(TAG) \

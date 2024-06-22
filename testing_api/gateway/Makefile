@@ -1,7 +1,7 @@
 TAG = latest
 
 build-image:
-	docker build -t nameko/gateway-services:$(TAG) ./services
+	docker build -t nameko/gateway-services:$(TAG) ./gateway
 
 docker-tag:
 	docker tag nameko/gateway-services:$(TAG) \

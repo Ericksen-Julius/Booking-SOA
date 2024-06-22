@@ -9,4 +9,4 @@ done
 
 # Run the service
 
-nameko run --config config.yml services.service --backdoor 3000
+nameko run --config config.yml booking.service --backdoor 3000
