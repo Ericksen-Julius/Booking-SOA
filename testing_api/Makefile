@@ -9,7 +9,7 @@ install-dependencies:
 # docker
 
 build-base:
-	docker build --target base -t base . && \
+	docker build --target base -t example-base . && \
 	docker build --target builder -t builder .
 
 build: build-base
