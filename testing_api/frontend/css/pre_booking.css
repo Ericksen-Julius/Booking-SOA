@@ -1,0 +1,46 @@
+.carousel-item img {
+    height: 300px;
+    object-fit: cover;
+}
+.icon-text {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    color: rgb(104, 113, 118);
+}
+.icon-text i {
+    margin-right: 10px;
+}
+.icon-text a {
+    margin-left: auto;
+}
+.icon-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.review-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+.review-box .review-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.review-box .review-meta .rating {
+    color: #FFD43B;
+}
+.review-box .review-content {
+    color: rgb(104, 113, 118);
+}
+.date-pill .card-body {
+    padding: 0.5rem;
+}
+.date-pill .card-title {
+    margin-bottom: 0;
+    font-size: 0.875rem;
+    color: #6c757d;
+}

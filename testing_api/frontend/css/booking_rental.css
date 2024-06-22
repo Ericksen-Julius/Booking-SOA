@@ -1,0 +1,41 @@
+.container-md {
+    max-width: 1000px;
+}
+.highlight {
+    color: #007bff;
+    font-weight: bold;
+}
+.icon-text {
+    display: flex;
+    align-items: center;
+}
+.icon-text i {
+    margin-right: 8px;
+    color: #007bff;
+}
+.tooltip-inner {
+    max-width: 250px;
+    background-color: #000;
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 0.875em;
+    border-radius: 0.25rem;
+}
+.carousel-inner img {
+    height: 200px;
+    object-fit: cover;
+}
+.list-unstyled .form-check {
+    display: flex;
+    align-items: center;
+}
+.list-unstyled .form-check input {
+    margin-right: 8px;
+}
+.list-unstyled .form-check label {
+    display: flex;
+    align-items: center;
+}
+.list-unstyled .form-check i {
+    margin-right: 5px;
+}

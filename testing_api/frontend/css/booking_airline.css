@@ -1,0 +1,17 @@
+.checkmark-list {
+    list-style: none;
+    padding: 0;
+}
+
+.checkmark-list li {
+    margin: 10px 0;
+    padding-left: 30px;
+    position: relative;
+}
+
+.checkmark-list li::before {
+    content: '✔';
+    position: absolute;
+    left: 0;
+    color: green;
+}

@@ -1,0 +1,24 @@
+.carousel-item img {
+    height: 300px;
+    object-fit: cover;
+}
+.icon-text {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    color: rgb(104, 113, 118);
+}
+
+.icon-text i {
+    margin-right: 10px;
+}
+
+.icon-text a {
+    margin-left: auto;
+}
+
+.icon-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
