@@ -15,6 +15,7 @@ services:
       - "3307:3306" # Exposing MySQL on different port for convenience
     environment:
       MYSQL_DATABASE: "microservices_soa_h"
+      MYSQL_ROOT_PASSWORD: "password"
     volumes:
       - ./mysql-init:/docker-entrypoint-initdb.d
     restart: always

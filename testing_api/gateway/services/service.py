@@ -7,9 +7,9 @@ from nameko.rpc import RpcProxy
 from nameko.web.handlers import http
 from werkzeug import Response
 
-from services.entrypoints import http
-from services.exceptions import OrderNotFound, ProductNotFound
-from services.schemas import CreateOrderSchema, GetOrderSchema, ProductSchema
+from services import http
+from services import OrderNotFound, ProductNotFound
+from services import CreateOrderSchema, GetOrderSchema, ProductSchema
 
 
 class GatewayService(object):

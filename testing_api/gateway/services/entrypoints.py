@@ -5,7 +5,7 @@ from nameko.exceptions import safe_for_serialization, BadRequest
 from nameko.web.handlers import HttpRequestHandler
 from werkzeug import Response
 
-from services.exceptions import ProductNotFound, OrderNotFound
+from services import ProductNotFound, OrderNotFound
 
 
 class HttpEntrypoint(HttpRequestHandler):

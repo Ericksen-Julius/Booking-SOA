@@ -1,6 +1,6 @@
 from nameko.rpc import rpc
 
-import services.dependencies as dependencies
+import services as dependencies
 
 class BookingService:
 
