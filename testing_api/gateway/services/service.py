@@ -5,11 +5,6 @@ from nameko import config
 from nameko.exceptions import BadRequest
 from nameko.rpc import RpcProxy
 from nameko.web.handlers import http
-from werkzeug import Response
-
-from services import http
-from services import OrderNotFound, ProductNotFound
-from services import CreateOrderSchema, GetOrderSchema, ProductSchema
 
 
 class GatewayService(object):

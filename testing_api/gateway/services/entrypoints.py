@@ -5,19 +5,11 @@ from nameko.exceptions import safe_for_serialization, BadRequest
 from nameko.web.handlers import HttpRequestHandler
 from werkzeug import Response
 
-from services import ProductNotFound, OrderNotFound
 
 
 class HttpEntrypoint(HttpRequestHandler):
     """ Overrides `response_from_exception` so we can customize error handling.
     """
-
-    mapped_errors = {
-        BadRequest: (400, 'BAD_REQUEST'),
-        ValidationError: (400, 'VALIDATION_ERROR'),
-        ProductNotFound: (404, 'PRODUCT_NOT_FOUND'),
-        OrderNotFound: (404, 'ORDER_NOT_FOUND'),
-    }
 
     def response_from_exception(self, exc):
         status_code, error_code = 500, 'UNEXPECTED_ERROR'
