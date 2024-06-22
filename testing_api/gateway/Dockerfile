@@ -128,7 +128,7 @@ FROM example-base as install
 COPY --from=builder /application/wheelhouse /wheelhouse
 
 # Install gateway service dependencies from wheel files
-RUN pip install --no-index -f /wheelhouse gateway-services
+RUN pip install --no-index -f /wheelhouse gateway_services
 
 # Stage 4: Final Service Image
 FROM base as service

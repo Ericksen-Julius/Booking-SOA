@@ -126,7 +126,7 @@ FROM example-base as install
 COPY --from=builder /application/wheelhouse /wheelhouse
 
 # Install user service dependencies
-RUN pip install --no-index -f /wheelhouse review-services
+RUN pip install --no-index -f /wheelhouse review_services
 
 # Stage 4: Final Service Image
 FROM base as service
