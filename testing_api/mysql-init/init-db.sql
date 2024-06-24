@@ -1,7 +1,7 @@
 -- Table structure for table `bookings`
 --
 
-CREATE TABLE `bookings` (
+CREATE TABLE IF NOT EXISTS `bookings` (
   `id` int(10) UNSIGNED NOT NULL,
   `user_id` int(10) UNSIGNED NOT NULL,
   `booking_type` varchar(20) NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE `bookings` (
 -- Table structure for table `booking_airlines`
 --
 
-CREATE TABLE `booking_airlines` (
+CREATE TABLE IF NOT EXISTS `booking_airlines` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `booking_id` int(10) UNSIGNED NOT NULL,
   `flight_id` int(11) NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE `booking_airlines` (
 -- Table structure for table `booking_attractions`
 --
 
-CREATE TABLE `booking_attractions` (
+CREATE TABLE IF NOT EXISTS `booking_attractions` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `booking_id` int(10) UNSIGNED NOT NULL,
   `attraction_provider_name` varchar(255) NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE `booking_attractions` (
 -- Table structure for table `booking_hotels`
 --
 
-CREATE TABLE `booking_hotels` (
+CREATE TABLE IF NOT EXISTS `booking_hotels` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `booking_id` int(10) UNSIGNED NOT NULL,
   `hotel_name` varchar(50) NOT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE `booking_hotels` (
 -- Table structure for table `booking_rentals`
 --
 
-CREATE TABLE `booking_rentals` (
+CREATE TABLE IF NOT EXISTS `booking_rentals` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `booking_id` int(10) UNSIGNED NOT NULL,
   `rental_provider_name` varchar(50) NOT NULL,
@@ -85,7 +85,7 @@ CREATE TABLE `booking_rentals` (
 -- --------------------------------------------------------
 
 -- Table structure for table `reviews`
-CREATE TABLE `reviews` (
+CREATE TABLE IF NOT EXISTS `reviews` (
   `id` int(10) UNSIGNED NOT NULL,
   `booking_id` int(10) UNSIGNED NOT NULL,
   `rating` int(11) NOT NULL,
@@ -99,7 +99,7 @@ CREATE TABLE `reviews` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table creation for `review_rental`
-CREATE TABLE `review_rental` (
+CREATE TABLE IF NOT EXISTS `review_rental` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `review_id` int(10) UNSIGNED NOT NULL,
   `provider_name` varchar(100) NOT NULL,
@@ -112,7 +112,7 @@ CREATE TABLE `review_rental` (
   CONSTRAINT `review_rental_review_id_foreign` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `review_hotel` (
+CREATE TABLE IF NOT EXISTS `review_hotel` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `review_id` int(10) UNSIGNED NOT NULL,
   `provider_name` varchar(100) NOT NULL,
@@ -125,7 +125,7 @@ CREATE TABLE `review_hotel` (
   CONSTRAINT `review_rental_review_id_foreign` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `review_airline` (
+CREATE TABLE IF NOT EXISTS `review_airline` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `review_id` int(10) UNSIGNED NOT NULL,
   `provider_name` varchar(100) NOT NULL,
@@ -138,7 +138,7 @@ CREATE TABLE `review_airline` (
   CONSTRAINT `review_rental_review_id_foreign` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `review_attraction` (
+CREATE TABLE IF NOT EXISTS `review_attraction` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `review_id` int(10) UNSIGNED NOT NULL,
   `provider_name` varchar(100) NOT NULL,
