@@ -150,7 +150,7 @@ USER nameko
 WORKDIR /var/nameko/
 
 # Set PYTHONPATH to include the application directory
-ENV PYTHONPATH=/application
+ENV PYTHONPATH=/application/booking
 
 # Expose port for the service
 EXPOSE 8000

@@ -7,4 +7,4 @@ until nc -z ${RABBIT_HOST} ${RABBIT_PORT}; do
 done
 
 # Run the service
-nameko run --config /var/nameko/config.yml booking.booking.service --backdoor 3000
+nameko run --config /var/nameko/config.yml service --backdoor 3000
