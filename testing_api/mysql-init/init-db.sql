@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `reviews` (
   `comment` text,
   `isEdited` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL
   PRIMARY KEY (`id`),
   KEY `reviews_booking_id_foreign` (`booking_id`),
   CONSTRAINT `reviews_booking_id_foreign` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS `review_rental` (
   `category` enum('Car Cleanliness','Simple Pick-up And Drop-off Process','Staff is Helpful') NOT NULL,
   `count` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL
   PRIMARY KEY (`id`),
   KEY `review_rental_review_id_foreign` (`review_id`),
   CONSTRAINT `fk_review_rental_review_id` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `review_hotel` (
   `category` enum('Strategic Location','Great Accomodation','Staff is Friendly') NOT NULL,
   `count` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL
   PRIMARY KEY (`id`),
   KEY `review_hotel_review_id_foreign` (`review_id`),
   CONSTRAINT `fk_review_hotel_review_id` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `review_airline` (
   `category` enum('Punctuality','Cabin Crew Service','Seat Comfort') NOT NULL,
   `count` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL
   PRIMARY KEY (`id`),
   KEY `review_airline_review_id_foreign` (`review_id`),
   CONSTRAINT `fk_review_airline_review_id` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `review_attraction` (
   `category` enum('Visitor Experience','Facilities','Staff Friendliness') NOT NULL,
   `count` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL
   PRIMARY KEY (`id`),
   KEY `review_attraction_review_id_foreign` (`review_id`),
   CONSTRAINT `fk_review_attraction_review_id` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
