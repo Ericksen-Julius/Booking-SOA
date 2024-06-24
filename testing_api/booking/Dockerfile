@@ -130,8 +130,10 @@ RUN pip install --no-index -f /wheelhouse booking_services
 # Stage 4: Final Service Image
 FROM base as service
 
-# Copy the virtual environment from the install stage
 COPY --from=install /appenv /appenv
+
+# Copy the application code to the service stage
+COPY . /application
 
 # Set working directory and copy configuration files
 RUN mkdir -p /var/nameko/
@@ -147,9 +149,13 @@ USER nameko
 # Set working directory
 WORKDIR /var/nameko/
 
+# Set PYTHONPATH to include the application directory
+ENV PYTHONPATH=/application
+
 # Expose port for the service
 EXPOSE 8000
 
 # Define the command to run the service
 CMD ["/var/nameko/run.sh"]
+
 
