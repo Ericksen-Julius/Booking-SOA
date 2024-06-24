@@ -1,5 +1,3 @@
-
-
 CREATE TABLE IF NOT EXISTS `bookings` (
   `id` int(10) UNSIGNED NOT NULL,
   `user_id` int(10) UNSIGNED NOT NULL,
@@ -12,12 +10,6 @@ CREATE TABLE IF NOT EXISTS `bookings` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---------------------------------------------------------
-
---
--- Table structure for table `booking_airlines`
---
-
 CREATE TABLE IF NOT EXISTS `booking_airlines` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `booking_id` int(10) UNSIGNED NOT NULL,
@@ -25,12 +17,6 @@ CREATE TABLE IF NOT EXISTS `booking_airlines` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `booking_attractions`
---
 
 CREATE TABLE IF NOT EXISTS `booking_attractions` (
   `id` bigint(20) UNSIGNED NOT NULL,
@@ -43,12 +29,6 @@ CREATE TABLE IF NOT EXISTS `booking_attractions` (
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `booking_hotels`
---
-
 CREATE TABLE IF NOT EXISTS `booking_hotels` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `booking_id` int(10) UNSIGNED NOT NULL,
@@ -60,12 +40,6 @@ CREATE TABLE IF NOT EXISTS `booking_hotels` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `booking_rentals`
---
 
 CREATE TABLE IF NOT EXISTS `booking_rentals` (
   `id` bigint(20) UNSIGNED NOT NULL,
@@ -80,7 +54,6 @@ CREATE TABLE IF NOT EXISTS `booking_rentals` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 CREATE TABLE IF NOT EXISTS `reviews` (
   `id` int(10) UNSIGNED NOT NULL,
