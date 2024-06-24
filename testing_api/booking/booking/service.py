@@ -1,6 +1,6 @@
 from nameko.rpc import rpc
 
-import booking.dependencies as sql_dependencies
+import dependencies as sql_dependencies
 
 class BookingService:
 
