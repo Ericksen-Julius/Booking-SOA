@@ -10,6 +10,7 @@ setup(
         "marshmallow==2.19.2",
         "nameko==v3.0.0-rc6",
         "mysqlclient==1.4.6",  # Added MySQL client
+        "werkzeug==2.0.2",     # Ensure the version is correct for your needs
     ],
     extras_require={
         'dev': [
