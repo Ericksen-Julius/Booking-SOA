@@ -6,7 +6,7 @@ from mysql.connector import Error
 from mysql.connector import pooling
 from datetime import datetime, timedelta
 import random
-import string, mean
+import string
 from datetime import date
 # from statistics import mean
 
