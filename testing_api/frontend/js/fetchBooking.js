@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
-    var booking = ""
-    var containerBooking = document.getElementById('containerList')
+    var booking = "";
+    var containerBooking = document.getElementById('containerList');
+
     async function getBookingData() {
         try {
             const response = await fetch('http://localhost:8000/booking/1', {
@@ -12,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             const result = await response.json();
-            // console.log('Success:', result);
             result.forEach(element => {
                 booking += `
                     <div class="col-lg-4">
@@ -23,20 +23,23 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <div>Type: ${element.booking_type}</div>
                                 <div>Provider Name: ${element.provider_name}</div>
                                 <div>Total Price: Rp. ${formatRupiah(element.total_price)}</div>
-                                <button class="btn btn-primary btn-detail mt-2 align-self-end">View Details</button>
+                                <button class="btn btn-primary btn-detail mt-2 align-self-end" onclick="sendPostData('${element.booking_code}')">View Details</button>
                             </div>
                         </div>
-                    </div>`
+                    </div>`;
             });
-            containerBooking.innerHTML = booking
+            containerBooking.innerHTML = booking;
         } catch (error) {
             console.error('Error:', error);
         }
     }
+
     function formatRupiah(number) {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
-    getBookingData()
-})
 
-
+    getBookingData();
+});
+function sendPostData(bookingCode) {
+    window.location.href = `bookingHistory.html?booking_code=${bookingCode}`;
+}
