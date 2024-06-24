@@ -92,6 +92,10 @@ RUN virtualenv -p python3 /appenv
 # Set environment variable for the virtual environment
 ENV PATH=/appenv/bin:$PATH
 
+# Install user service dependencies
+RUN pip install --no-index -f /wheelhouse booking_services
+RUN pip install mysql-connector-python==8.0.28  # Add this line to install mysql-connector-python
+
 # Add a user and create a directory for nameko
 RUN groupadd -r nameko && useradd -r -g nameko nameko
 RUN mkdir -p /var/nameko/ && chown -R nameko:nameko /var/nameko/
