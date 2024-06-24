@@ -84,7 +84,6 @@ CREATE TABLE IF NOT EXISTS `booking_rentals` (
 
 -- --------------------------------------------------------
 
--- Table structure for table `reviews`
 CREATE TABLE IF NOT EXISTS `reviews` (
   `id` int(10) UNSIGNED NOT NULL,
   `booking_id` int(10) UNSIGNED NOT NULL,
@@ -98,7 +97,6 @@ CREATE TABLE IF NOT EXISTS `reviews` (
   CONSTRAINT `reviews_booking_id_foreign` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table creation for `review_rental`
 CREATE TABLE IF NOT EXISTS `review_rental` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `review_id` int(10) UNSIGNED NOT NULL,
@@ -109,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `review_rental` (
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `review_rental_review_id_foreign` (`review_id`),
-  CONSTRAINT `review_rental_review_id_foreign` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_review_rental_review_id` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `review_hotel` (
@@ -121,32 +119,32 @@ CREATE TABLE IF NOT EXISTS `review_hotel` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `review_rental_review_id_foreign` (`review_id`),
-  CONSTRAINT `review_rental_review_id_foreign` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
+  KEY `review_hotel_review_id_foreign` (`review_id`),
+  CONSTRAINT `fk_review_hotel_review_id` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `review_airline` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `review_id` int(10) UNSIGNED NOT NULL,
   `provider_name` varchar(100) NOT NULL,
-  `category` enum('Car Cleanliness','Simple Pick-up And Drop-off Process','Staff is Helpful') NOT NULL,
+  `category` enum('Punctuality','Cabin Crew Service','Seat Comfort') NOT NULL,
   `count` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `review_rental_review_id_foreign` (`review_id`),
-  CONSTRAINT `review_rental_review_id_foreign` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
+  KEY `review_airline_review_id_foreign` (`review_id`),
+  CONSTRAINT `fk_review_airline_review_id` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `review_attraction` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `review_id` int(10) UNSIGNED NOT NULL,
   `provider_name` varchar(100) NOT NULL,
-  `category` enum('Car Cleanliness','Simple Pick-up And Drop-off Process','Staff is Helpful') NOT NULL,
+  `category` enum('Visitor Experience','Facilities','Staff Friendliness') NOT NULL,
   `count` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `review_rental_review_id_foreign` (`review_id`),
-  CONSTRAINT `review_rental_review_id_foreign` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
+  KEY `review_attraction_review_id_foreign` (`review_id`),
+  CONSTRAINT `fk_review_attraction_review_id` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
