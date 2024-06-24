@@ -1,12 +1,12 @@
 from nameko.rpc import rpc
 
-import dependencies as dependencies
+import dependencies as sql_dependencies
 
 class BookingService:
 
     name = 'booking_service'
 
-    database = dependencies.Database()
+    database = sql_dependencies.Database()
 
     @rpc
     def get_all_bookings(self):

@@ -6,7 +6,7 @@ from mysql.connector import Error
 from mysql.connector import pooling
 from datetime import datetime, timedelta
 import random
-import string, mean
+import string
 from datetime import date
 # from statistics import mean
 
@@ -395,25 +395,23 @@ class Database(DependencyProvider):
                 pool_name="database_pool",
                 pool_size=10,
                 pool_reset_session=True,
-                host='localhost',
+                host='booking-mysql',
+                port="3306",
                 database='microservices_soa_h',
                 user='root',
-                password=''
+                password='password'
             )
         except Error as e :
             print ("Error while connecting to MySQL using Connection pool ", e)
 
     def get_dependency(self, worker_ctx):
+        if self.connection_pool is None:
+            raise Exception("Connection pool is not initialized")
         return DatabaseWrapper(self.connection_pool.get_connection())
     
-    def check_booking_exists(self, booking_id):
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "SELECT * FROM `bookings` WHERE id=%s"
-            cursor.execute(sql, (booking_id,))
-            booking = cursor.fetchone()
-            cursor.close()
-            return booking is not None
-        except Exception as e:
-            error_message = str(e)
-            return False
+    def stop(self):
+    # Called when the container is stopped
+        if self.connection_pool:
+            self.connection_pool.close()
+            print("MySQL Connection Pool closed")
+    

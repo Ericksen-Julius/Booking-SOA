@@ -29,8 +29,8 @@ services:
     ports:
       - "8001:8000"
     links:
-      - "rabbit:booking-rabbit"
-      - "mysql:booking-mysql"
+      - "rabbit:rabbit"
+      - "mysql:mysql"
     environment:
       MYSQL_PASSWORD: "password"
       MYSQL_HOST: "mysql"
@@ -50,8 +50,8 @@ services:
     ports:
       - "8002:8000"
     links:
-      - "rabbit:booking-rabbit"
-      - "mysql:booking-mysql"
+      - "rabbit:rabbit"
+      - "mysql:mysql"
     environment:
       MYSQL_PASSWORD: "password"
       MYSQL_HOST: "mysql"
@@ -70,12 +70,10 @@ services:
     ports:
       - "8004:8000"
     links:
-      - "rabbit:booking-rabbit"
+      - "rabbit:rabbit"
     environment:
       RABBIT_HOST: "rabbit"
       RABBIT_PORT: "5672"
       RABBIT_USER: "guest"
       RABBIT_PASSWORD: "guest"
       RABBIT_MANAGEMENT_PORT: "15672"
-
-

@@ -21,6 +21,7 @@ class GatewayService(object):
     }
 
     booking_rpc = RpcProxy('booking_service')
+    review_rpc = RpcProxy('review_service')
 
     @http('GET', '/booking')
     def get_all_bookings(self, request):
