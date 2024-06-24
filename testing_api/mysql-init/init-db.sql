@@ -1,4 +1,3 @@
-Table structure for table `bookings`
 
 
 CREATE TABLE IF NOT EXISTS `bookings` (
