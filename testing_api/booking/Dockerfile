@@ -75,7 +75,7 @@
 # # Define the command to run the service
 # CMD ["/var/nameko/run.sh"]
 
-# Stage 1: Base Image
+# Base Image
 FROM python:3.8-slim as base
 
 # Install necessary packages
@@ -96,7 +96,7 @@ ENV PATH=/appenv/bin:$PATH
 RUN groupadd -r nameko && useradd -r -g nameko nameko
 RUN mkdir -p /var/nameko/ && chown -R nameko:nameko /var/nameko/
 
-# Stage 2: Builder Image
+# Builder Image
 FROM base as builder
 
 # Install build dependencies
@@ -119,7 +119,7 @@ WORKDIR /application
 RUN pip wheel .
 RUN ls /application/wheelhouse
 
-# Stage 3: Install Image
+# Install Image
 FROM base as install
 
 COPY --from=builder /application/wheelhouse /wheelhouse
@@ -127,7 +127,7 @@ COPY --from=builder /application/wheelhouse /wheelhouse
 # Install user service dependencies
 RUN pip install --no-index -f /wheelhouse booking_services
 
-# Stage 4: Final Service Image
+# Final Service Image
 FROM base as service
 
 COPY --from=install /appenv /appenv
@@ -157,5 +157,3 @@ EXPOSE 8000
 
 # Define the command to run the service
 CMD ["/var/nameko/run.sh"]
-
-
