@@ -4,10 +4,8 @@ import json
 import mysql.connector
 from mysql.connector import Error
 from mysql.connector import pooling
-from datetime import datetime, timedelta
 import random
-import string, mean
-from datetime import date
+import string
 # from statistics import mean
 
 
