@@ -2,6 +2,7 @@ async function getData() {
     const params = new URLSearchParams(window.location.search);
     const booking_code = params.get('booking_code');
     const provider = document.getElementById('provider_name');
+    const total_price = document.getElementById('totalPrice');
     if (!booking_code) {
         document.body.innerHTML = '<h1>Access Denied</h1>';
     }
@@ -18,6 +19,7 @@ async function getData() {
         result = result['booking details']
         console.log(result)
         provider.innerHTML = result.provider_name
+        total_price.innerHTML = formatCurrency(result.total_price)
         let UIType = result.booking_type;
         let details;
         let info = `
@@ -268,6 +270,10 @@ async function getData() {
         console.error('Error:', error);
     }
 
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
 }
 
 function convertDateToIndonesian(dateStr) {
