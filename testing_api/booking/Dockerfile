@@ -83,8 +83,8 @@ RUN apt-get update && \
     apt-get install --yes curl netcat-openbsd libmariadb-dev
 
 # Upgrade pip and install virtualenv
-RUN pip install --upgrade pip
-RUN pip install virtualenv
+RUN pip3 install --upgrade pip
+RUN pip3 install virtualenv
 
 # Create a virtual environment
 RUN virtualenv -p python3 /appenv
@@ -96,20 +96,56 @@ ENV PATH=/appenv/bin:$PATH
 RUN groupadd -r nameko && useradd -r -g nameko nameko
 RUN mkdir -p /var/nameko/ && chown -R nameko:nameko /var/nameko/
 
-# Switch to the new user
+# Stage 2: Builder Image
+FROM base as builder
+
+# Install build dependencies
+RUN apt-get update && \
+    apt-get install --yes build-essential autoconf libtool pkg-config \
+    libgflags-dev libgtest-dev clang libc++-dev automake git libpq-dev
+
+# Install auditwheel
+RUN pip install auditwheel
+
+# Copy the application code to the container
+COPY . /application
+
+# Set environment variables for pip wheel directory
+ENV PIP_WHEEL_DIR=/application/wheelhouse
+ENV PIP_FIND_LINKS=/application/wheelhouse
+
+# Build the wheel
+WORKDIR /application
+RUN pip wheel .
+RUN ls /application/wheelhouse
+
+# Stage 3: Install Image
+FROM base as install
+
+COPY --from=builder /application/wheelhouse /wheelhouse
+
+# Install user service dependencies
+RUN pip install --no-index -f /wheelhouse booking_services
+
+# Stage 4: Final Service Image
+FROM base as service
+
+# Copy the virtual environment from the install stage
+COPY --from=install /appenv /appenv
+
+# Set working directory and copy configuration files
+RUN mkdir -p /var/nameko/
+COPY config.yml /var/nameko/config.yml
+COPY run.sh /var/nameko/run.sh
+
+# Set permissions for run.sh
+RUN chmod +x /var/nameko/run.sh
+
+# Switch to non-root user
 USER nameko
 
 # Set working directory
-WORKDIR /var/nameko
-
-# Copy application code
-COPY . /var/nameko
-
-# Install dependencies
-RUN pip install nameko
-
-# Install booking service
-RUN pip install /var/nameko
+WORKDIR /var/nameko/
 
 # Expose port for the service
 EXPOSE 8000
