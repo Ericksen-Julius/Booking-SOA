@@ -1,11 +1,11 @@
 TAG = latest
 
 build-image:
-	docker build -t nameko/review-services:$(TAG) ./review
+	docker build -t nameko/nameko-example-review:$(TAG) ./review
 
 docker-tag:
-	docker tag nameko/review-services:$(TAG) \
-	nameko/review-services:$(TAG)
+	docker tag nameko/nameko-example-review:$(TAG) \
+	nameko/nameko-example-review:$(TAG)
 
 push-image:
-	docker push nameko/review-services:$(TAG)
+	docker push nameko/nameko-example-review:$(TAG)

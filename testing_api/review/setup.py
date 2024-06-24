@@ -2,9 +2,10 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='review-services',
+    name='nameko-examples-review',
     version='0.0.1',
     description='Review Services',
+    author='nameko',
     packages=find_packages(exclude=['test', 'test.*']),
     py_modules=['review'],
     install_requires=[

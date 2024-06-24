@@ -2,9 +2,9 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='gateway-services',
+    name='nameko-examples-gateway',
     version='0.0.1',
-    description='Gateway Services',
+    description='Gateway for user booking and review',
     packages=find_packages(exclude=['test', 'test.*']),
     install_requires=[
         "marshmallow==2.19.2",

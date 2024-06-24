@@ -2,14 +2,14 @@ version: '3'
 
 services:
   rabbit:
-    container_name: booking-rabbit
+    container_name: nameko-example-rabbitmq
     image: rabbitmq:3.7-management
     ports:
       - "15673:15672" # Exposing RabbitMQ web management on different port for convenience
     restart: always
 
   mysql:
-    container_name: booking-mysql
+    container_name: nameko-example-mysql
     image: mysql:5.7
     ports:
       - "3307:3306" # Exposing MySQL on different port for convenience
@@ -22,15 +22,15 @@ services:
 
   booking:
     build: ./booking
-    container_name: booking-services
+    container_name: nameko-example-booking
     depends_on:
       - rabbit
       - mysql
     ports:
       - "8001:8000"
     links:
-      - "rabbit:booking-rabbit"
-      - "mysql:booking-mysql"
+      - "rabbit:nameko-example-rabbitmq"
+      - "mysql:nameko-example-mysql"
     environment:
       MYSQL_PASSWORD: "password"
       MYSQL_HOST: "mysql"
@@ -43,15 +43,15 @@ services:
 
   review:
     build: ./review
-    container_name: review-services
+    container_name: nameko-example-review
     depends_on:
       - rabbit
       - mysql
     ports:
       - "8002:8000"
     links:
-      - "rabbit:booking-rabbit"
-      - "mysql:booking-mysql"
+      - "rabbit:nameko-example-rabbitmq"
+      - "mysql:nameko-example-mysql"
     environment:
       MYSQL_PASSWORD: "password"
       MYSQL_HOST: "mysql"
@@ -64,13 +64,13 @@ services:
 
   gateway:
     build: ./gateway
-    container_name: gateway-services
+    container_name: nameko-example-gateway
     depends_on:
       - rabbit
     ports:
       - "8004:8000"
     links:
-      - "rabbit:booking-rabbit"
+      - "rabbit:nameko-example-rabbitmq"
     environment:
       RABBIT_HOST: "rabbit"
       RABBIT_PORT: "5672"

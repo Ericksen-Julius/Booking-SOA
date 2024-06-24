@@ -1,5 +1,5 @@
 from nameko.rpc import rpc
-import dependencies as dependencies
+from review import dependencies
 
 class ReviewService:
 

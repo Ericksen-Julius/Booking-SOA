@@ -5,11 +5,21 @@ from nameko.exceptions import safe_for_serialization, BadRequest
 from nameko.web.handlers import HttpRequestHandler
 from werkzeug import Response
 
+from gateway.exceptions import BookingNotFound
+from gateway.exceptions import ReviewNotFound
+
 
 
 class HttpEntrypoint(HttpRequestHandler):
     """ Overrides `response_from_exception` so we can customize error handling.
     """
+
+    mapped_errors = {
+        BadRequest: (400, 'BAD_REQUEST'),
+        ValidationError: (400, 'VALIDATION_ERROR'),
+        BookingNotFound: (404, 'USER_NOT_FOUND'),  # Map BookingNotFound to a 404 status code
+        ReviewNotFound: (404, 'USER_NOT_FOUND'),  # Map ReviewNotFound to a 404 status code
+    }
 
     def response_from_exception(self, exc):
         status_code, error_code = 500, 'UNEXPECTED_ERROR'

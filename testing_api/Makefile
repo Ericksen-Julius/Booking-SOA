@@ -10,8 +10,8 @@ install-dependencies:
 # docker
 
 build-base:
-	docker build --target base -t example-base . && \
-	docker build --target builder -t example-builder .
+	docker build --target base -t nameko-example-base . && \
+	docker build --target builder -t nameko-example-builder .
 
 build: build-base
 	for image in $(IMAGES); do \

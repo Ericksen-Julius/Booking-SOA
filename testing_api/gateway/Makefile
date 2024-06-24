@@ -1,11 +1,11 @@
 TAG = latest
 
 build-image:
-	docker build -t nameko/gateway-services:$(TAG) ./gateway
+	docker build -t nameko/nameko-example-gateway:$(TAG) ./gateway
 
 docker-tag:
-	docker tag nameko/gateway-services:$(TAG) \
-	nameko/gateway-services:$(TAG)
+	docker tag nameko/nameko-example-gateway:$(TAG) \
+	nameko/nameko-example-gateway:$(TAG)
 
 push-image:
-	docker push nameko/gateway-services:$(TAG)
+	docker push nameko/nameko-example-gateway:$(TAG)
