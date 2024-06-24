@@ -6,6 +6,7 @@ setup(
     version='0.0.1',
     description='Booking Services',
     packages=find_packages(exclude=['test', 'test.*']),
+    py_modules=['booking'],
     install_requires=[
         "marshmallow==2.19.2",
         "nameko==v3.0.0-rc6",

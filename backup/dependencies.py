@@ -73,6 +73,8 @@ class DatabaseWrapper:
                 sql = """
                 SELECT 
                     a.service_id,
+                    a.total_price,
+                    a.booking_type,
                     b.room_type,
                     a.provider_name,
                     a.booking_code,
@@ -102,6 +104,8 @@ class DatabaseWrapper:
                     a.service_id,
                     a.booking_code,
                     a.provider_name,
+                    a.total_price,
+                    a.booking_type,
                     a.asuransi_id,
                     b.flight_id,
                     b.flight_date
@@ -125,6 +129,8 @@ class DatabaseWrapper:
                     a.service_id,
                     a.booking_code,
                     a.provider_name,
+                    a.total_price,
+                    a.booking_type,
                     a.asuransi_id,
                     b.pickup_date,
                     b.return_date,
@@ -154,6 +160,8 @@ class DatabaseWrapper:
                     a.service_id,
                     a.booking_code,
                     a.provider_name,
+                    a.total_price,
+                    a.booking_type,
                     b.visit_date,
                     b.paket_attraction_id
                 FROM 

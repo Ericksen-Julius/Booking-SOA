@@ -11,7 +11,7 @@ install-dependencies:
 
 build-base:
 	docker build --target base -t example-base . && \
-	docker build --target builder -t builder .
+	docker build --target builder -t example-builder .
 
 build: build-base
 	for image in $(IMAGES); do \
