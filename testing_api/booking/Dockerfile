@@ -93,8 +93,7 @@ RUN virtualenv -p python3 /appenv
 ENV PATH=/appenv/bin:$PATH
 
 # Install user service dependencies
-RUN pip install --no-index -f /wheelhouse booking-services
-RUN pip install mysql-connector-python==8.0.28  # Install mysql-connector-python
+RUN pip install mysql-connector-python==8.0.28 
 
 # Add a user and create a directory for nameko
 RUN groupadd -r nameko && useradd -r -g nameko nameko
@@ -130,7 +129,6 @@ COPY --from=builder /application/wheelhouse /wheelhouse
 
 # Install user service dependencies
 RUN pip install --no-index -f /wheelhouse booking-services
-RUN pip install mysql-connector-python==8.0.28  # Ensure consistency with setup.py
 
 # Final Service Image
 FROM base as service
