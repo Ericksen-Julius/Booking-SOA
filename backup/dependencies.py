@@ -63,17 +63,17 @@ class DatabaseWrapper:
         cursor.close()
         return result
     
-    def get_booking_details(self, booking_id):    
+    def get_booking_details(self, booking_code):    
         try:    
             cursor = self.connection.cursor(dictionary=True)
-            sql = "SELECT booking_type FROM bookings WHERE id = %s"
-            cursor.execute(sql,(booking_id,))
+            sql = "SELECT booking_type FROM bookings WHERE booking_code = %s"
+            cursor.execute(sql,(booking_code,))
             result = cursor.fetchone()
             if (result and result['booking_type'] == "Hotel"):
                 sql = """
                 SELECT 
                     a.service_id,
-                    a.total_price,
+                    CAST(a.total_price AS SIGNED) AS total_price,
                     a.booking_type,
                     b.room_type,
                     a.provider_name,
@@ -89,9 +89,9 @@ class DatabaseWrapper:
                 ON 
                     a.id = b.booking_id 
                 WHERE 
-                    a.id = %s;
+                    a.booking_code = %s;
                 """
-                cursor.execute(sql,(booking_id,))
+                cursor.execute(sql,(booking_code,))
                 bookings = cursor.fetchone()
                 if bookings:
                     if isinstance(bookings['check_in_date'], date):
@@ -104,7 +104,7 @@ class DatabaseWrapper:
                     a.service_id,
                     a.booking_code,
                     a.provider_name,
-                    a.total_price,
+                    CAST(a.total_price AS SIGNED) AS total_price,
                     a.booking_type,
                     a.asuransi_id,
                     b.flight_id,
@@ -116,9 +116,9 @@ class DatabaseWrapper:
                 ON 
                     a.id = b.booking_id 
                 WHERE 
-                    a.id = %s;
+                    a.booking_code = %s;
                 """
-                cursor.execute(sql,(booking_id,))
+                cursor.execute(sql,(booking_code,))
                 bookings = cursor.fetchone()
                 if bookings:
                     if isinstance(bookings['flight_date'], date):
@@ -129,7 +129,7 @@ class DatabaseWrapper:
                     a.service_id,
                     a.booking_code,
                     a.provider_name,
-                    a.total_price,
+                    CAST(a.total_price AS SIGNED) AS total_price,
                     a.booking_type,
                     a.asuransi_id,
                     b.pickup_date,
@@ -137,7 +137,8 @@ class DatabaseWrapper:
                     b.car_id,
                     b.pickup_location,
                     b.return_location,
-                    b.is_with_driver
+                    b.is_with_driver,
+                    DATEDIFF(b.return_date, b.pickup_date) AS number_of_days
                 FROM 
                     bookings AS a
                 LEFT JOIN 
@@ -145,9 +146,9 @@ class DatabaseWrapper:
                 ON 
                     a.id = b.booking_id 
                 WHERE 
-                    a.id = %s;
+                    a.booking_code = %s;
                 """
-                cursor.execute(sql,(booking_id,))
+                cursor.execute(sql,(booking_code,))
                 bookings = cursor.fetchone()
                 if bookings:
                     if isinstance(bookings['pickup_date'], date):
@@ -160,9 +161,10 @@ class DatabaseWrapper:
                     a.service_id,
                     a.booking_code,
                     a.provider_name,
-                    a.total_price,
+                    CAST(a.total_price AS SIGNED) AS total_price,
                     a.booking_type,
                     b.visit_date,
+                    b.number_of_tickets,
                     b.paket_attraction_id
                 FROM 
                     bookings AS a
@@ -171,9 +173,9 @@ class DatabaseWrapper:
                 ON 
                     a.id = b.booking_id 
                 WHERE 
-                    a.id = %s;
+                    a.booking_code = %s;
                 """
-                cursor.execute(sql,(booking_id,))
+                cursor.execute(sql,(booking_code,))
                 bookings = cursor.fetchone()
                 if bookings:
                     if isinstance(bookings['visit_date'], date):

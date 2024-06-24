@@ -32,10 +32,10 @@ class GatewayService:
             return 400, self.header ,"Booking not found"
         except Exception as e:
             return 500, str(e)
-    @http('GET', '/bookingDetails/<int:booking_id>')
-    def get_booking_details(self, request, booking_id):
+    @http('GET', '/bookingDetails/<string:booking_code>')
+    def get_booking_details(self, request, booking_code):
         try:
-            bookings = self.booking_rpc.get_booking_details(booking_id=booking_id)
+            bookings = self.booking_rpc.get_booking_details(booking_code=booking_code)
             if bookings:
                 return 200, self.header, json.dumps(bookings)
             return 400, self.header ,"Booking not found"

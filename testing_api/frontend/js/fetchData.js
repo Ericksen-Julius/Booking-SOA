@@ -1,6 +1,7 @@
 async function getData() {
     const params = new URLSearchParams(window.location.search);
     const booking_code = params.get('booking_code');
+    const provider = document.getElementById('provider_name');
     if (!booking_code) {
         document.body.innerHTML = '<h1>Access Denied</h1>';
     }
@@ -13,7 +14,10 @@ async function getData() {
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        const result = await response.json();
+        var result = await response.json();
+        result = result['booking details']
+        console.log(result)
+        provider.innerHTML = result.provider_name
         let UIType = result.booking_type;
         let details;
         let info = `
@@ -75,8 +79,8 @@ async function getData() {
         let book = `
             <div class="row mb-2">
                 <div class="col-6 text-center">
-                    <p class="fw-bolder mb-2">Booking number</p>
-                    <p>#1261635</p>
+                    <p class="fw-bolder mb-2">Booking code</p>
+                    <p>${result.booking_code}</p>
                 </div>
                 <div class="col-6 text-center">
                     <p class="fw-bolder mb-2">Payment method</p>
@@ -107,15 +111,15 @@ async function getData() {
                     <div class="row mb-2">
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Room Type</p>
-                            <p>VIP</p>
+                            <p>${result.room_type}</p>
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Night(s)</p>
-                            <p>2</p>
+                            <p>${result.number_of_nights}</p>
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Quantity</p>
-                            <p>4</p>
+                            <p>${result.number_of_nights}</p>
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Price</p>
@@ -125,11 +129,11 @@ async function getData() {
                     <div class="row mb-2">
                         <div class="col-6">
                             <p class="fw-bolder mb-2">Check-in</p>
-                            <p>Sat, June 1 2024</p>
+                            <p>${convertDateToIndonesian(result.check_in_date)}</p>
                         </div>
                         <div class="col-6">
                             <p class="fw-bolder mb-2">Check-out</p>
-                            <p>Sat, June 3 2024</p>
+                            <p>${convertDateToIndonesian(result.check_out_date)}</p>
                         </div>
                     </div>
                 </div>`;
@@ -145,12 +149,12 @@ async function getData() {
                             <p>Economy</p>
                         </div>
                         <div class="col-3">
-                            <p class="fw-bolder mb-2">Flight code</p>
-                            <p>#456</p>
+                            <p class="fw-bolder mb-2">Flight id</p>
+                            <p>${result.flight_id}</p>
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Quantity</p>
-                            <p>4</p>
+                            <p>1</p>
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Price</p>
@@ -191,11 +195,11 @@ async function getData() {
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Day(s)</p>
-                            <p>3</p>
+                            <p>${result.number_of_days}</p>
                         </div>
                         <div class="col-3">
-                            <p class="fw-bolder mb-2">Quantity</p>
-                            <p>4</p>
+                            <p class="fw-bolder mb-2">Is With Driver</p>
+                            <p>${result.is_with_driver == true ? 'Yes' : 'No'}</p>
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Price</p>
@@ -205,21 +209,21 @@ async function getData() {
                     <div class="row mb-2">
                         <div class="col-6">
                             <p class="fw-bolder mb-2">Pick Up Date</p>
-                            <p>Sat, June 1 2024</p>
+                            <p>${convertDateToIndonesian(result.pickup_date)}</p>
                         </div>
                         <div class="col-6">
                             <p class="fw-bolder mb-2">Return Date</p>
-                            <p>Sat, June 4 2024</p>
+                            <p>${convertDateToIndonesian(result.return_date)}</p>
                         </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-6">
                             <p class="fw-bolder mb-2">Pick Up Location</p>
-                            <p>Jl. Kubu Anyar No.31, Tuban, Kec. Kuta, Kabupaten Badung 4727177</p>
+                            <p>${result.pickup_location}</p>
                         </div>
                         <div class="col-6">
                             <p class="fw-bolder mb-2">Return Location</p>
-                            <p>Jl. Kubu Anyar No.31, Tuban, Kec. Kuta, Kabupaten Badung 4727177</p>
+                            <p>${result.return_location}</p>
                         </div>
                     </div>
                 </div>`;
@@ -232,11 +236,11 @@ async function getData() {
                     <div class="row mb-2">
                         <div class="col-4">
                             <p class="fw-bolder mb-2">Type</p>
-                            <p>Terusan</p>
+                            <p>${result.paket_attraction_id}</p>
                         </div>
                         <div class="col-4">
                             <p class="fw-bolder mb-2">Quantity</p>
-                            <p>4</p>
+                            <p>${result.number_of_tickets}</p>
                         </div>
                         <div class="col-4">
                             <p class="fw-bolder mb-2">Price</p>
@@ -249,8 +253,8 @@ async function getData() {
                             <p>#345</p>
                         </div>
                         <div class="col-6">
-                            <p class="fw-bolder mb-2">Visit</p>
-                            <p>Sat, June 4 2024</p>
+                            <p class="fw-bolder mb-2">Visit date</p>
+                            <p>${result.visit_date}</p>
                         </div>
                     </div>
                 </div>`;
@@ -264,6 +268,21 @@ async function getData() {
         console.error('Error:', error);
     }
 
+}
+
+function convertDateToIndonesian(dateStr) {
+    const months = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+
+    const [year, monthIndex, day] = dateStr.split('-');
+
+    const monthName = months[parseInt(monthIndex, 10) - 1];
+
+    const formattedDate = `${parseInt(day, 10)} ${monthName} ${year}`;
+
+    return formattedDate;
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
