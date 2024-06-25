@@ -326,7 +326,6 @@ ALTER TABLE `booking_rentals`
   ADD KEY `booking_rentals_booking_id_foreign` (`booking_id`);
 
 --
-<<<<<<< HEAD
 -- Indexes for table `reviews`
 --
 ALTER TABLE `reviews`
@@ -346,14 +345,6 @@ ALTER TABLE `review_selections`
   ADD PRIMARY KEY (`id`),
   ADD KEY `review_id` (`review_id`),
   ADD KEY `option_id` (`option_id`);
-=======
--- Indexes for table `migrations`
-
-
---
--- Indexes for table `refund`
---
->>>>>>> aebab9199184cf930851870e80c49998c3c89a7b
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -436,7 +427,6 @@ ALTER TABLE `booking_rentals`
   ADD CONSTRAINT `booking_rentals_booking_id_foreign` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE;
 
 --
-<<<<<<< HEAD
 -- Constraints for table `reviews`
 --
 ALTER TABLE `reviews`
@@ -449,10 +439,6 @@ ALTER TABLE `review_selections`
   ADD CONSTRAINT `review_selections_ibfk_1` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `review_selections_ibfk_2` FOREIGN KEY (`option_id`) REFERENCES `review_options` (`id`);
 COMMIT;
-=======
--- Constraints for table `refund`
---
->>>>>>> aebab9199184cf930851870e80c49998c3c89a7b
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
