@@ -8,6 +8,7 @@ class BookingService:
 
     database = sql_dependencies.Database()
 
+
     @rpc
     def get_all_bookings(self):
         bookings = self.database.get_all_bookings()
@@ -51,8 +52,8 @@ class BookingService:
         paket_attraction_id=paket_attraction_id, visit_date=visit_date, number_of_tickets=number_of_tickets,service_id=service_id)
         return response
     @rpc
-    def edit_booking(self,status,booking_id):
-        response = self.database.edit_booking(status = status, booking_id = booking_id)
+    def edit_booking(self,status,booking_code):
+        response = self.database.edit_booking(status = status, booking_code = booking_code)
         return response
     @rpc
     def getCountBookHotel(self):

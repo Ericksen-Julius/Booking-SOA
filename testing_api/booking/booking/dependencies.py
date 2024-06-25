@@ -278,7 +278,7 @@ class DatabaseWrapper:
             cursor = self.connection.cursor(dictionary=True)
             while(True):
                 random_code = generate_string()
-                booking_code = f'#{type[0]}{random_code}'
+                booking_code = f'{type[0]}{random_code}'
                 check_sql = "SELECT * FROM `bookings` WHERE booking_code = %s"
                 cursor.execute(check_sql,(booking_code,))
                 exist_code = cursor.fetchone()
@@ -293,18 +293,19 @@ class DatabaseWrapper:
         except Exception as e:
             error_message = str(e)
             return {'error': error_message, 'success': False}
-    def edit_booking(self,status,booking_id):
+        
+    def edit_booking(self,status,booking_code):
         try:
             cursor = self.connection.cursor(dictionary=True)
 
-            check_sql = "SELECT * FROM `bookings` WHERE id=%s"
-            cursor.execute(check_sql, (booking_id,))
+            check_sql = "SELECT * FROM `bookings` WHERE booking_code=%s"
+            cursor.execute(check_sql, (booking_code,))
             existing_booking = cursor.fetchone()
 
             if existing_booking is None:
-                return {'message': f'Booking with id {booking_id} does not exist in the database','status': 404}
-            sql = "UPDATE `bookings` SET `status`=%s WHERE id=%s"
-            cursor.execute(sql, (status,booking_id))
+                return {'message': f'Booking with code {booking_code} does not exist in the database','status': 404}
+            sql = "UPDATE `bookings` SET `status`=%s WHERE booking_code=%s"
+            cursor.execute(sql, (status,booking_code))
             self.connection.commit()
             cursor.close()
             return {'message': 'Booking updated successfully','status': 200}

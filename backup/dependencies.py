@@ -278,7 +278,7 @@ class DatabaseWrapper:
             cursor = self.connection.cursor(dictionary=True)
             while(True):
                 random_code = generate_string()
-                booking_code = f'#{type[0]}{random_code}'
+                booking_code = f'{type[0]}{random_code}'
                 check_sql = "SELECT * FROM `bookings` WHERE booking_code = %s"
                 cursor.execute(check_sql,(booking_code,))
                 exist_code = cursor.fetchone()
@@ -293,18 +293,19 @@ class DatabaseWrapper:
         except Exception as e:
             error_message = str(e)
             return {'error': error_message, 'success': False}
-    def edit_booking(self,status,booking_id):
+        
+    def edit_booking(self,status,booking_code):
         try:
             cursor = self.connection.cursor(dictionary=True)
 
-            check_sql = "SELECT * FROM `bookings` WHERE id=%s"
-            cursor.execute(check_sql, (booking_id,))
+            check_sql = "SELECT * FROM `bookings` WHERE booking_code=%s"
+            cursor.execute(check_sql, (booking_code,))
             existing_booking = cursor.fetchone()
 
             if existing_booking is None:
-                return {'message': f'Booking with id {booking_id} does not exist in the database','status': 404}
-            sql = "UPDATE `bookings` SET `status`=%s WHERE id=%s"
-            cursor.execute(sql, (status,booking_id))
+                return {'message': f'Booking with code {booking_code} does not exist in the database','status': 404}
+            sql = "UPDATE `bookings` SET `status`=%s WHERE booking_code=%s"
+            cursor.execute(sql, (status,booking_code))
             self.connection.commit()
             cursor.close()
             return {'message': 'Booking updated successfully','status': 200}
@@ -380,227 +381,292 @@ class DatabaseWrapper:
         
 
         # Review related methods
-    def add_review(self, booking_id, user_id, rating, review_text):
+    def add_review(self, booking_id, rating, comment, option_ids):
         try:
+            cursor = self.connection.cursor(dictionary=True)
             if not self.check_booking_exists(booking_id):
                 return {'error': 'Booking does not exist', 'status': 404}
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "INSERT INTO reviews (booking_id, user_id, rating, comment, created_at) VALUES (%s, %s, %s, %s, NOW())"
-            cursor.execute(sql, (booking_id, user_id, rating, review_text))
+            sql = "INSERT INTO reviews (`booking_id`, `rating`, `comment`) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (booking_id, rating, comment))
             self.connection.commit()
+            inserted_id = cursor.lastrowid
             cursor.close()
-            return {'message': 'Review added successfully', 'status': 200}
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
-
-    def get_reviews_by_booking(self, booking_id):
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "SELECT * FROM reviews WHERE booking_id = %s"
-            cursor.execute(sql, (booking_id,))
-            reviews = cursor.fetchall()
-            cursor.close()
-            return reviews
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
-
-    def get_reviews_by_user(self, user_id):
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "SELECT * FROM reviews WHERE user_id = %s"
-            cursor.execute(sql, (user_id,))
-            reviews = cursor.fetchall()
-            cursor.close()
-            return reviews
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
-
-    def edit_review(self, review_id, rating, review_text):
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "UPDATE reviews SET rating = %s, comment = %s, updated_at = NOW() WHERE id = %s"
-            cursor.execute(sql, (rating, review_text, review_id))
-            self.connection.commit()
-            self.set_review_as_edited(review_id)
-            cursor.close()
-            return {'message': 'Review updated successfully', 'status': 200}
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
-
-    def set_review_as_edited(self, review_id):
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "UPDATE reviews SET isEdited = 1 WHERE id = %s"
-            cursor.execute(sql, (review_id,))
-            self.connection.commit()
-            cursor.close()
-            return {'message': 'Review marked as edited', 'status': 200}
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
-    def get_reviews_by_service_type(self, service_type):
-        connection = self.get_connection(service_type)
-        cursor = connection.cursor(dictionary=True)
-        sql = "SELECT * FROM reviews"
-        cursor.execute(sql)
-        reviews = cursor.fetchall()
-        cursor.close()
-        connection.close()
-        return reviews
-
-    def get_average_rating_by_service_type(self, service_type):
-        connection = self.get_connection(service_type)
-        cursor = connection.cursor(dictionary=True)
-        sql = "SELECT rating FROM reviews"
-        cursor.execute(sql)
-        ratings = [row['rating'] for row in cursor.fetchall()]
-        cursor.close()
-        connection.close()
-        if ratings:
-            return mean(ratings)
-        else:
-            return 0
-        
-    # Refund related methods
-    def trigger_refund(self, booking_id, user_id, refund_reason):
-        try:
-            if not self.check_booking_exists(booking_id):
-                return {'error': 'Booking does not exist', 'status': 404}
-
-            calculate_refund = self.calculate_refund(booking_id)
-            if 'error' in calculate_refund:
-                return {'error': 'Error in Calculating Refund', 'status': 400}
-
-            refund_amount = calculate_refund['refund_amount']
-            refund_penalty = calculate_refund['refund_penalty']
-            cursor = self.connection.cursor(dictionary=True)
-            
-            sql = "INSERT INTO refunds (booking_id, user_id, refund_reason, refund_penalty, refund_amount, refund_status, created_at) VALUES (%s, %s, %s, %s, 'pending', NOW())"
-            cursor.execute(sql, (booking_id, user_id, refund_reason, refund_penalty, refund_amount))
-            self.connection.commit()
-            cursor.close()
-            return {'message': 'Refund triggered successfully', 'status': 200}
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
-        
-    def validate_refund(self, booking_id):
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "SELECT * FROM bookings WHERE id = %s"
-            cursor.execute(sql, (booking_id,))
-            booking = cursor.fetchone()
-            cursor.close()
-
-            if not booking:
-                return {'error': 'Booking does not exist', 'status': 404}
-
-            booking_date = booking['booking_date']
-            days_until_booking = (booking_date - datetime.now()).days
-
-            if days_until_booking > 30:
-                penalty_rate = 0.25
-            elif 15 <= days_until_booking <= 30:
-                penalty_rate = 0.50
-            elif 7 <= days_until_booking < 15:
-                penalty_rate = 0.75
+            check = self.add_review_selection(option_ids=option_ids, inserted_id=inserted_id)
+            if check['success']:
+                return {'message': 'Review added successfully', 'status': 200}
             else:
-                penalty_rate = 1.00
-
-            return {'penalty_rate': penalty_rate, 'status': 200}
+                return {'error': 'Failed to add review selections', 'status': 500}
         except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
-
-    def calculate_refund(self, booking_id):
-        validation_result = self.validate_refund(booking_id)
-        if 'error' in validation_result:
-            return validation_result
-
-        penalty_rate = validation_result['penalty_rate']
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "SELECT total_price FROM bookings WHERE id = %s"
-            cursor.execute(sql, (booking_id,))
-            booking = cursor.fetchone()
-            cursor.close()
-
-            total_price = booking['total_price']
-            refund_penalty = penalty_rate
-            refund_amount = total_price * refund_penalty
-
-            return {'refund_penalty': refund_penalty, 'refund_amount': refund_amount, 'status': 200}
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
+            return {'error': str(e), 'status': 500}
         
-    def check_booking_exists(self, booking_id):
+    def get_rating_type(self, service_type):
         try:
             cursor = self.connection.cursor(dictionary=True)
-            sql = "SELECT * FROM `bookings` WHERE id=%s"
-            cursor.execute(sql, (booking_id,))
-            booking = cursor.fetchone()
+            sql = """
+                    SELECT a.provider_name, ROUND(AVG(b.rating), 2) AS average_rating
+                    FROM bookings AS a
+                    JOIN reviews AS b ON a.id = b.booking_id
+                    WHERE LOWER(a.booking_type) = %s
+                    GROUP BY a.provider_name;
+                """
+            cursor.execute(sql, (service_type,))
+            results = cursor.fetchall()
             cursor.close()
-            return booking is not None
+            for result in results:
+                result['average_rating'] = float(result['average_rating'])
+
+            if not results:
+                return {'error': 'No data found', 'status': 404}
+            return {'data': results, 'status': 200}
         except Exception as e:
-            error_message = str(e)
-            return False
-    
-    def get_refunds_by_booking(self, booking_id):
+            return {'error': str(e), 'status': 500}
+
+    def get_information_provider(self, provider_name):
         try:
             cursor = self.connection.cursor(dictionary=True)
-            sql = "SELECT * FROM refunds WHERE booking_id = %s"
-            cursor.execute(sql, (booking_id,))
-            refunds = cursor.fetchall()
-            cursor.close()
+            sql = """
+                SELECT 
+                    ro.option_text,
+                    COUNT(rs.id) AS selection_count
+                FROM 
+                    review_selections rs
+                JOIN 
+                    reviews r ON rs.review_id = r.id
+                JOIN 
+                    review_options ro ON rs.option_id = ro.id
+                JOIN 
+                    bookings b ON r.booking_id = b.id  
+                WHERE 
+                    r.rating = 5 AND b.provider_name = %s
+                GROUP BY 
+                    ro.option_text;
+                    """
+            cursor.execute(sql, (provider_name,))
+            results = cursor.fetchall()
+            return {'data': results, 'status': 200}
+        except Exception as e:
+            return {'error': str(e), 'status': 500}
+
+
+    # def add_review_selection(self, option_ids, inserted_id):
+    #     try:
+    #         cursor = self.connection.cursor(dictionary=True)
+    #         sql = "INSERT INTO review_selections (`review_id`, `option_id`) VALUES (%s, %s)"
+    #         for option_id in option_ids:
+    #             cursor.execute(sql, (inserted_id, option_id))
+    #         self.connection.commit()
+    #         cursor.close()
+    #         return {'success': True}
+    #     except Exception as e:
+    #         return {'error': str(e), 'success': False}
+
+    # def get_reviews_by_booking(self, booking_id):
+    #     try:
+    #         cursor = self.connection.cursor(dictionary=True)
+    #         sql = "SELECT * FROM reviews WHERE booking_id = %s"
+    #         cursor.execute(sql, (booking_id,))
+    #         reviews = cursor.fetchall()
+    #         cursor.close()
+    #         return reviews
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return {'error': error_message, 'status': 500}
+
+    # def get_reviews_by_user(self, user_id):
+    #     try:
+    #         cursor = self.connection.cursor(dictionary=True)
+    #         sql = "SELECT * FROM reviews WHERE user_id = %s"
+    #         cursor.execute(sql, (user_id,))
+    #         reviews = cursor.fetchall()
+    #         cursor.close()
+    #         return reviews
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return {'error': error_message, 'status': 500}
+
+    # def edit_review(self, review_id, rating, review_text):
+    #     try:
+    #         cursor = self.connection.cursor(dictionary=True)
+    #         sql = "UPDATE reviews SET rating = %s, comment = %s, updated_at = NOW() WHERE id = %s"
+    #         cursor.execute(sql, (rating, review_text, review_id))
+    #         self.connection.commit()
+    #         self.set_review_as_edited(review_id)
+    #         cursor.close()
+    #         return {'message': 'Review updated successfully', 'status': 200}
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return {'error': error_message, 'status': 500}
+
+    # def set_review_as_edited(self, review_id):
+    #     try:
+    #         cursor = self.connection.cursor(dictionary=True)
+    #         sql = "UPDATE reviews SET isEdited = 1 WHERE id = %s"
+    #         cursor.execute(sql, (review_id,))
+    #         self.connection.commit()
+    #         cursor.close()
+    #         return {'message': 'Review marked as edited', 'status': 200}
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return {'error': error_message, 'status': 500}
+    # def get_reviews_by_service_type(self, service_type):
+    #     connection = self.get_connection(service_type)
+    #     cursor = connection.cursor(dictionary=True)
+    #     sql = "SELECT * FROM reviews"
+    #     cursor.execute(sql)
+    #     reviews = cursor.fetchall()
+    #     cursor.close()
+    #     connection.close()
+    #     return reviews
+
+    # def get_average_rating_by_service_type(self, service_type):
+    #     connection = self.get_connection(service_type)
+    #     cursor = connection.cursor(dictionary=True)
+    #     sql = "SELECT rating FROM reviews"
+    #     cursor.execute(sql)
+    #     ratings = [row['rating'] for row in cursor.fetchall()]
+    #     cursor.close()
+    #     connection.close()
+    #     if ratings:
+    #         return mean(ratings)
+    #     else:
+    #         return 0
+        
+    # # Refund related methods
+    # def trigger_refund(self, booking_id, user_id, refund_reason):
+    #     try:
+    #         if not self.check_booking_exists(booking_id):
+    #             return {'error': 'Booking does not exist', 'status': 404}
+
+    #         calculate_refund = self.calculate_refund(booking_id)
+    #         if 'error' in calculate_refund:
+    #             return {'error': 'Error in Calculating Refund', 'status': 400}
+
+    #         refund_amount = calculate_refund['refund_amount']
+    #         refund_penalty = calculate_refund['refund_penalty']
+    #         cursor = self.connection.cursor(dictionary=True)
             
-            return refunds
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
+    #         sql = "INSERT INTO refunds (booking_id, user_id, refund_reason, refund_penalty, refund_amount, refund_status, created_at) VALUES (%s, %s, %s, %s, 'pending', NOW())"
+    #         cursor.execute(sql, (booking_id, user_id, refund_reason, refund_penalty, refund_amount))
+    #         self.connection.commit()
+    #         cursor.close()
+    #         return {'message': 'Refund triggered successfully', 'status': 200}
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return {'error': error_message, 'status': 500}
+        
+    # def validate_refund(self, booking_id):
+    #     try:
+    #         cursor = self.connection.cursor(dictionary=True)
+    #         sql = "SELECT * FROM bookings WHERE id = %s"
+    #         cursor.execute(sql, (booking_id,))
+    #         booking = cursor.fetchone()
+    #         cursor.close()
 
-    def get_refunds_by_user(self, user_id):
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "SELECT * FROM refunds WHERE user_id = %s"
-            cursor.execute(sql, (user_id,))
-            refunds = cursor.fetchall()
-            cursor.close()
-            return refunds
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
+    #         if not booking:
+    #             return {'error': 'Booking does not exist', 'status': 404}
 
-    def edit_refunds(self, refund_id, status, refund_amount):
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "UPDATE refunds SET status = %s, refund_amount = %s, updated_at = NOW() WHERE id = %s"
-            cursor.execute(sql, (status, refund_amount, refund_id))
-            self.connection.commit()
-            cursor.close()
-            return {'message': 'Refund updated successfully', 'status': 200}
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
+    #         booking_date = booking['booking_date']
+    #         days_until_booking = (booking_date - datetime.now()).days
+
+    #         if days_until_booking > 30:
+    #             penalty_rate = 0.25
+    #         elif 15 <= days_until_booking <= 30:
+    #             penalty_rate = 0.50
+    #         elif 7 <= days_until_booking < 15:
+    #             penalty_rate = 0.75
+    #         else:
+    #             penalty_rate = 1.00
+
+    #         return {'penalty_rate': penalty_rate, 'status': 200}
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return {'error': error_message, 'status': 500}
+
+    # def calculate_refund(self, booking_id):
+    #     validation_result = self.validate_refund(booking_id)
+    #     if 'error' in validation_result:
+    #         return validation_result
+
+    #     penalty_rate = validation_result['penalty_rate']
+    #     try:
+    #         cursor = self.connection.cursor(dictionary=True)
+    #         sql = "SELECT total_price FROM bookings WHERE id = %s"
+    #         cursor.execute(sql, (booking_id,))
+    #         booking = cursor.fetchone()
+    #         cursor.close()
+
+    #         total_price = booking['total_price']
+    #         refund_penalty = penalty_rate
+    #         refund_amount = total_price * refund_penalty
+
+    #         return {'refund_penalty': refund_penalty, 'refund_amount': refund_amount, 'status': 200}
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return {'error': error_message, 'status': 500}
+        
+    # def check_booking_exists(self, booking_id):
+    #     try:
+    #         cursor = self.connection.cursor(dictionary=True)
+    #         sql = "SELECT * FROM `bookings` WHERE id=%s"
+    #         cursor.execute(sql, (booking_id,))
+    #         booking = cursor.fetchone()
+    #         cursor.close()
+    #         return booking is not None
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return False
+    
+    # def get_refunds_by_booking(self, booking_id):
+    #     try:
+    #         cursor = self.connection.cursor(dictionary=True)
+    #         sql = "SELECT * FROM refunds WHERE booking_id = %s"
+    #         cursor.execute(sql, (booking_id,))
+    #         refunds = cursor.fetchall()
+    #         cursor.close()
+            
+    #         return refunds
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return {'error': error_message, 'status': 500}
+
+    # def get_refunds_by_user(self, user_id):
+    #     try:
+    #         cursor = self.connection.cursor(dictionary=True)
+    #         sql = "SELECT * FROM refunds WHERE user_id = %s"
+    #         cursor.execute(sql, (user_id,))
+    #         refunds = cursor.fetchall()
+    #         cursor.close()
+    #         return refunds
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return {'error': error_message, 'status': 500}
+
+    # def edit_refunds(self, refund_id, status, refund_amount):
+    #     try:
+    #         cursor = self.connection.cursor(dictionary=True)
+    #         sql = "UPDATE refunds SET status = %s, refund_amount = %s, updated_at = NOW() WHERE id = %s"
+    #         cursor.execute(sql, (status, refund_amount, refund_id))
+    #         self.connection.commit()
+    #         cursor.close()
+    #         return {'message': 'Refund updated successfully', 'status': 200}
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return {'error': error_message, 'status': 500}
         
     
 
 
-    def send_data_to_payment(self, booking_id):
-        # Implement communication with payment microservice
-        pass
+    # def send_data_to_payment(self, booking_id):
+    #     # Implement communication with payment microservice
+    #     pass
 
-    def send_data_to_accomodation(self, booking_id):
-        # Implement communication with provider
-        pass
+    # def send_data_to_accomodation(self, booking_id):
+    #     # Implement communication with provider
+    #     pass
 
-    def send_data_to_notification(self, booking_id):
-        # Implement notification
-        pass
+    # def send_data_to_notification(self, booking_id):
+    #     # Implement notification
+    #     pass
 
 
 

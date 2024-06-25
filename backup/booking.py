@@ -1,6 +1,6 @@
 from nameko.rpc import rpc
 
-import booking.dependencies as dependencies
+import dependencies as dependencies
 
 class BookingService:
 
@@ -51,8 +51,8 @@ class BookingService:
         paket_attraction_id=paket_attraction_id, visit_date=visit_date, number_of_tickets=number_of_tickets,service_id=service_id)
         return response
     @rpc
-    def edit_booking(self,status,booking_id):
-        response = self.database.edit_booking(status = status, booking_id = booking_id)
+    def edit_booking(self,status,booking_code):
+        response = self.database.edit_booking(status = status, booking_code = booking_code)
         return response
     @rpc
     def getCountBookHotel(self):

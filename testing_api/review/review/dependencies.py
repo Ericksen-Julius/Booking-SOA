@@ -22,102 +22,72 @@ class DatabaseWrapper:
         self.connection = connection
     
 # Review related methods
-    def add_review(self, booking_id, user_id, rating, review_text):
+        # Review related methods
+    def add_review(self, booking_id, rating, comment, option_ids):
         try:
+            cursor = self.connection.cursor(dictionary=True)
             if not self.check_booking_exists(booking_id):
                 return {'error': 'Booking does not exist', 'status': 404}
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "INSERT INTO reviews (booking_id, user_id, rating, comment, created_at) VALUES (%s, %s, %s, %s, NOW())"
-            cursor.execute(sql, (booking_id, user_id, rating, review_text))
+            sql = "INSERT INTO reviews (`booking_id`, `rating`, `comment`) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (booking_id, rating, comment))
             self.connection.commit()
+            inserted_id = cursor.lastrowid
             cursor.close()
-            return {'message': 'Review added successfully', 'status': 200}
+            check = self.add_review_selection(option_ids=option_ids, inserted_id=inserted_id)
+            if check['success']:
+                return {'message': 'Review added successfully', 'status': 200}
+            else:
+                return {'error': 'Failed to add review selections', 'status': 500}
         except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
-
-    def get_reviews_by_booking(self, booking_id):
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "SELECT * FROM reviews WHERE booking_id = %s"
-            cursor.execute(sql, (booking_id,))
-            reviews = cursor.fetchall()
-            cursor.close()
-            return reviews
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
-
-    def get_reviews_by_user(self, user_id):
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "SELECT * FROM reviews WHERE user_id = %s"
-            cursor.execute(sql, (user_id,))
-            reviews = cursor.fetchall()
-            cursor.close()
-            return reviews
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
-
-    def edit_review(self, review_id, rating, review_text):
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "UPDATE reviews SET rating = %s, comment = %s, updated_at = NOW() WHERE id = %s"
-            cursor.execute(sql, (rating, review_text, review_id))
-            self.connection.commit()
-            self.set_review_as_edited(review_id)
-            cursor.close()
-            return {'message': 'Review updated successfully', 'status': 200}
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
-
-    def set_review_as_edited(self, review_id):
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            sql = "UPDATE reviews SET isEdited = 1 WHERE id = %s"
-            cursor.execute(sql, (review_id,))
-            self.connection.commit()
-            cursor.close()
-            return {'message': 'Review marked as edited', 'status': 200}
-        except Exception as e:
-            error_message = str(e)
-            return {'error': error_message, 'status': 500}
-    def get_reviews_by_service_type(self, service_type):
-        connection = self.get_connection(service_type)
-        cursor = connection.cursor(dictionary=True)
-        sql = "SELECT * FROM reviews"
-        cursor.execute(sql)
-        reviews = cursor.fetchall()
-        cursor.close()
-        connection.close()
-        return reviews
-
-    def get_average_rating_by_service_type(self, service_type):
-        connection = self.get_connection(service_type)
-        cursor = connection.cursor(dictionary=True)
-        sql = "SELECT rating FROM reviews"
-        cursor.execute(sql)
-        ratings = [row['rating'] for row in cursor.fetchall()]
-        cursor.close()
-        connection.close()
-        if ratings:
-            return mean(ratings)
-        else:
-            return 0
+            return {'error': str(e), 'status': 500}
         
-    def check_booking_exists(self, booking_id):
+    def get_rating_type(self, service_type):
         try:
             cursor = self.connection.cursor(dictionary=True)
-            sql = "SELECT * FROM `bookings` WHERE id=%s"
-            cursor.execute(sql, (booking_id,))
-            booking = cursor.fetchone()
+            sql = """
+                    SELECT a.provider_name, ROUND(AVG(b.rating), 2) AS average_rating
+                    FROM bookings AS a
+                    JOIN reviews AS b ON a.id = b.booking_id
+                    WHERE LOWER(a.booking_type) = %s
+                    GROUP BY a.provider_name;
+                """
+            cursor.execute(sql, (service_type,))
+            results = cursor.fetchall()
             cursor.close()
-            return booking is not None
+            for result in results:
+                result['average_rating'] = float(result['average_rating'])
+
+            if not results:
+                return {'error': 'No data found', 'status': 404}
+            return {'data': results, 'status': 200}
         except Exception as e:
-            error_message = str(e)
-            return False
+            return {'error': str(e), 'status': 500}
+
+    def get_information_provider(self, provider_name):
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            sql = """
+                SELECT 
+                    ro.option_text,
+                    COUNT(rs.id) AS selection_count
+                FROM 
+                    review_selections rs
+                JOIN 
+                    reviews r ON rs.review_id = r.id
+                JOIN 
+                    review_options ro ON rs.option_id = ro.id
+                JOIN 
+                    bookings b ON r.booking_id = b.id  
+                WHERE 
+                    r.rating = 5 AND b.provider_name = %s
+                GROUP BY 
+                    ro.option_text;
+                    """
+            cursor.execute(sql, (provider_name,))
+            results = cursor.fetchall()
+            return {'data': results, 'status': 200}
+        except Exception as e:
+            return {'error': str(e), 'status': 500}
 
 
 

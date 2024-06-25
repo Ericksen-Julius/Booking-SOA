@@ -15,6 +15,7 @@ class GatewayService:
     }
 
     booking_rpc = RpcProxy('booking_service')
+    review_rpc = RpcProxy('review_service')
 
     @http('GET', '/booking')
     def get_all_bookings(self, request):
@@ -97,13 +98,13 @@ class GatewayService:
             error_message = str(e)
             return 500,json.dumps({'error': error_message})
         
-    @http('PUT', '/booking/<int:booking_id>')
-    def edit_booking(self, request,booking_id):
+    @http('PUT', '/booking/<string:booking_code>')
+    def edit_booking(self, request,booking_code):
         try:
             data = request.get_data(as_text=True)
             json_data = json.loads(data)
             status = json_data.get('status')
-            response = self.booking_rpc.edit_booking(status=status, booking_id=booking_id)
+            response = self.booking_rpc.edit_booking(status=status, booking_code=booking_code)
 
             return (response['status'],self.header,response['message'])
 
@@ -144,8 +145,6 @@ class GatewayService:
         except Exception as e:
             error_message = str(e)
             return 500,json.dumps({'error': error_message})
-            
-        
         
     @http('POST', '/review')
     def add_review(self, request):
@@ -153,11 +152,11 @@ class GatewayService:
             data = request.get_data(as_text=True)
             review_data = json.loads(data)
             booking_id = review_data.get('booking_id')
-            user_id = review_data.get('user_id')
             rating = review_data.get('rating')
-            review_text = review_data.get('review_text')
-            response = self.review_rpc.add_review(booking_id, user_id, rating, review_text)
-            return response['status'], json.dumps({'message': response['message']})
+            comment = review_data.get('comment')
+            option_ids = review_data.get('option_id')
+            response = self.review_rpc.add_review(booking_id=booking_id, rating=rating, comment=comment, option_ids=option_ids)
+            return response['status'], self.header, json.dumps({'message': response['message']})
         except Exception as e:
             error_message = str(e)
             return 500, json.dumps({'error': error_message})
@@ -192,52 +191,69 @@ class GatewayService:
         except Exception as e:
             error_message = str(e)
             return 500, json.dumps({'error': error_message})
+        
     @http("GET", "/reviews/<string:service_type>")
-    def get_reviews_and_average(self, request, service_type):
-        valid_service_types = ["hotel", "airline", "attraction", "car_rental", "travel_agent"]
-        
-        if service_type not in valid_service_types:
-            return 400, json.dumps({"error": "Invalid service type"})
-        
-        result = self.review_rpc.get_reviews_and_average_by_service_type(service_type)
-        return 200, json.dumps(result)
+    def get_rating_type(self, request, service_type):
+        try:
+            valid_service_types = ["hotel", "airline", "attraction", "rental"]
+            if service_type not in valid_service_types:
+                return 400, json.dumps({"error": "Invalid service type"})
+
+            result = self.review_rpc.get_rating_type(service_type=service_type)
+            if(result['status'] == 200):
+                return (result['status'],self.header,json.dumps(result['data']))
+            return 500, self.header, json.dumps(result['error'])
+        except Exception as e:
+            error_message = str(e)
+            return 500, json.dumps({'error': error_message})
     
-    @http('POST', '/refund')
-    def trigger_refund(self, request):
+    @http("GET", "/reviewProvider/<string:provider_name>")
+    def get_information_provider(self, request, provider_name):
         try:
-            data = request.get_data(as_text=True)
-            refund_data = json.loads(data)
-            booking_id = refund_data.get('booking_id')
-            user_id = refund_data.get('user_id')
-            refund_reason = refund_data.get('refund_reason')
-            response = self.refund_rpc.trigger_refund(booking_id, user_id, refund_reason)
-            return response['status'], json.dumps({'message': response['message']})
+            result = self.review_rpc.get_information_provider(provider_name=provider_name)
+            if(result['status'] == 200):
+                return (result['status'],self.header,json.dumps(result['data']))
+            return 500, self.header, json.dumps(result['error'])
         except Exception as e:
             error_message = str(e)
             return 500, json.dumps({'error': error_message})
 
-    @http('GET', '/refunds/booking/<int:booking_id>')
-    def get_refunds_by_booking(self, request, booking_id):
-        refunds = self.refund_rpc.get_refunds_by_booking(booking_id)
-        return json.dumps(refunds)
+    # @http('POST', '/refund')
+    # def trigger_refund(self, request):
+    #     try:
+    #         data = request.get_data(as_text=True)
+    #         refund_data = json.loads(data)
+    #         booking_id = refund_data.get('booking_id')
+    #         user_id = refund_data.get('user_id')
+    #         refund_reason = refund_data.get('refund_reason')
+    #         response = self.refund_rpc.trigger_refund(booking_id, user_id, refund_reason)
+    #         return response['status'], json.dumps({'message': response['message']})
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return 500, json.dumps({'error': error_message})
 
-    @http('GET', '/refunds/user/<int:user_id>')
-    def get_refunds_by_user(self, request, user_id):
-        refunds = self.refund_rpc.get_refunds_by_user(user_id)
-        return json.dumps(refunds)
+    # @http('GET', '/refunds/booking/<int:booking_id>')
+    # def get_refunds_by_booking(self, request, booking_id):
+    #     refunds = self.refund_rpc.get_refunds_by_booking(booking_id)
+    #     return json.dumps(refunds)
 
-    @http('PUT', '/refunds/<int:refund_id>')
-    def edit_refund(self, request, refund_id):
-        try:
-            data = request.get_data(as_text=True)
-            refund_data = json.loads(data)
-            status = refund_data.get('status')
-            refund_amount = refund_data.get('refund_amount')
-            response = self.refund_rpc.edit_refunds_data(refund_id, status, refund_amount)
-            return response['status'], json.dumps(response)
-        except Exception as e:
-            error_message = str(e)
-            return 500, json.dumps({'error': error_message})
+    # @http('GET', '/refunds/user/<int:user_id>')
+    # def get_refunds_by_user(self, request, user_id):
+    #     refunds = self.refund_rpc.get_refunds_by_user(user_id)
+    #     return json.dumps(refunds)
+
+    # @http('PUT', '/refunds/<int:refund_id>')
+    # def edit_refund(self, request, refund_id):
+    #     try:
+    #         data = request.get_data(as_text=True)
+    #         refund_data = json.loads(data)
+    #         status = refund_data.get('status')
+    #         refund_amount = refund_data.get('refund_amount')
+    #         response = self.refund_rpc.edit_refunds_data(refund_id, status, refund_amount)
+    #         return response['status'], json.dumps(response)
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return 500, json.dumps({'error': error_message})
         
     # @http('GET', '/refund/validate/<int:booking_id>')
     # def validate_refund(self, request, booking_id):
