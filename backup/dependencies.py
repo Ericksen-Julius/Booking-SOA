@@ -193,7 +193,7 @@ class DatabaseWrapper:
                 data['number_of_rooms'] = number_of_rooms
                 data['booking_code'] = result['booking_code']
                 cursor.close()
-                return {'message': 'Booking created successfully','status': 200, 'data': data}
+                return {'message': 'Booking created successfully','status': 200, 'data': data, 'booking_code': result['booking_code'],'booking_id': result['new_inserted_id'] }
             except Exception as e:
                 error_message = str(e)
                 return {'error': error_message}
@@ -215,7 +215,7 @@ class DatabaseWrapper:
                 data['flight_date'] = flight_date
                 data['booking_code'] = result['booking_code']
                 cursor.close()
-                return {'message': 'Booking created successfully','status': 200, "data": data}
+                return {'message': 'Booking created successfully','status': 200, "data": data, 'booking_code': result['booking_code']}
             except Exception as e:
                 error_message = str(e)
                 return {'error': error_message}
@@ -231,6 +231,7 @@ class DatabaseWrapper:
                 sql = "INSERT INTO `booking_rentals`(`booking_id`, `car_id`, `pickup_date`, `return_date`, `pickup_location`, `return_location`, `is_with_driver`) VALUES (%s, %s, %s, %s, %s, %s, %s)"
                 cursor.execute(sql, (result['new_inserted_id'],car_id,pick_up_date,return_date,pick_up_location,return_location,is_with_driver))
                 self.connection.commit()
+                inserted_id = cursor.lastrowid
                 data = {}
                 data['type'] = type
                 data['provider_name'] = provider_name
@@ -242,7 +243,7 @@ class DatabaseWrapper:
                 data['is_with_driver'] = is_with_driver
                 data['booking_code'] = result['booking_code']
                 cursor.close()
-                return {'message': 'Booking created successfully','status': 200 , 'data': data}
+                return {'message': 'Booking created successfully','status': 200 , 'data': data, 'booking_code': result['booking_code'],'booking_id':  result['new_inserted_id']}
             except Exception as e:
                 error_message = str(e)
                 return {'error': error_message}
@@ -258,6 +259,7 @@ class DatabaseWrapper:
                 sql = "INSERT INTO `booking_attractions`(`booking_id`, `paket_attraction_id`, `visit_date`, `number_of_tickets`) VALUES (%s, %s, %s, %s)"
                 cursor.execute(sql, (result['new_inserted_id'],paket_attraction_id,visit_date,number_of_tickets))
                 self.connection.commit()
+                inserted_id = cursor.lastrowid
                 data = {}
                 data['type'] = type
                 data['provider_name'] = provider_name
@@ -266,7 +268,7 @@ class DatabaseWrapper:
                 data['number_of_tickets'] = number_of_tickets
                 data['booking_code'] = result['booking_code']
                 cursor.close()
-                return {'message': 'Booking created successfully','status': 200, 'data': data}
+                return {'message': 'Booking created successfully','status': 200, 'data': data, 'booking_code': result['booking_code'],'booking_id': result['new_inserted_id']}
             except Exception as e:
                 error_message = str(e)
                 return {'error': error_message}

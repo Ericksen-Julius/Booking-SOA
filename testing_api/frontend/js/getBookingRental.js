@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const luggages = document.getElementById('luggages')
     const transmission = document.getElementById('transmission')
     const year = document.getElementById('year')
-    const rental_price = document.getElementById('rental_price')
+    const rental_price = document.getElementsByClassName('rental_price')
     const car_name = document.getElementsByClassName('car_name')
     const day_rental = document.getElementById('day_rental')
     const total_price = document.getElementById('total_price')
@@ -19,8 +19,20 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const image_wrapper = document.getElementById('image_wrapper')
     const pick_up_date = document.getElementById('pick_up_date')
     const return_date = document.getElementById('return_date')
+    const insuranceCheckbox2 = document.getElementById('insuranceCheckbox2');
+    const pick_up_location = document.getElementById('pickup');
+    const return_location = document.getElementById('return');
+    const is_with_driver = 0
+    let asuransi_id = 0
     const service_url = ''
+    const submitButton = document.getElementById('book')
+    const carInsurance = document.getElementById('insuranceCheckBox1')
+
     let providerName = 'Yanto Car'
+    let totalPriceValue = 0
+    let insurance_price = 0
+    let province = 'Malang'
+    let pricelist
 
     console.log(service_id)
     console.log(pickup)
@@ -54,6 +66,47 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const dayRental = Math.ceil(differenceMs / (1000 * 60 * 60 * 24));
 
     day_rental.innerHTML = dayRental == 1 ? `(${dayRental} day)` : `(${dayRental} days)`
+
+    insuranceCheckbox2.addEventListener('click', () => {
+        is_with_driver = insuranceCheckbox2.checked ? 1 : 0;
+        console.log('Checkbox state:', is_with_driver);
+        // You can now use the `checkboxState` variable as needed
+    });
+
+    carInsurance.addEventListener('click', () => {
+        asuransi_id = carInsurance.checked ? 1 : 0;
+
+        if (asuransi_id == 1) {
+            totalPriceValue += insurance_price
+        } else {
+            totalPriceValue -= insurance_price
+        }
+        // You can now use the `checkboxState` variable as needed
+    });
+
+    async function getInsurancePrice() {
+        try {
+            const response = await fetch(`http://ec2-52-7-154-154.compute-1.amazonaws.com:8005/insurance/all`, {
+                method: 'GET',
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const result = await response.json()
+            pricelist = result.filter(insurance => insurance.provinsi === province);
+            const keys = Object.keys(pricelist);
+
+            for (let i = 4; i < keys.length; i++) {
+                const [min, max] = keys[i].split('-').map(Number);
+                if (dayRental >= min && dayRental <= max) {
+                    insurance_price = pricelist[keys[i]]
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
 
 
     async function getCarData() {
@@ -106,7 +159,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
             luggages.innerHTML = result.data.car_seats
             transmission.innerHTML = result.data.car_seats
             year.innerHTML = result.data.car_seats
-            rental_price.innerHTML = `Rp. ${formatRupiah(result.data.car_price)}`
+            // rental_price.innerHTML = `Rp. ${formatRupiah(result.data.car_price)}`
+            for (let i = 0; i < rental_price.length; i++) {
+                rental_price[i].innerHTML = result.data.car_price
+            }
             for (let i = 0; i < car_name.length; i++) {
                 car_name[i].innerHTML = result.data.car_name
             }
@@ -119,6 +175,112 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     }
     getCarData()
+
+    async function postBookingRental() {
+        if (pick_up_location.value == '' || return_location.value == '') {
+            Swal.fire({
+                title: "Failed",
+                text: "Tempat pengambilan dan pengembalian harus diisi!",
+                icon: "error"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    return
+                }
+            })
+        }
+        const data = {
+            user_id: 1,
+            type: "Rental",
+            total_price: totalPriceValue,
+            provider_name: providerName,
+            car_id: car_id,
+            pick_up_date: pick_up_date,
+            return_date: return_date,
+            pick_up_location: pick_up_location.value,
+            return_location: return_location.value,
+            is_with_driver: is_with_driver,
+            service_id: service_id
+        };
+        try {
+            const urlPost = `http://3.226.141.243:8004/booking`
+            const response1 = await fetch(urlPost, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+            if (!response1.ok) {
+                throw new Error(`HTTP error! Status: ${response1.status}`);
+            }
+            const result1 = await response1.json();
+            if (result1.status == 200) {
+                const url2 = `${service_url}/booking_car`
+                const data1 = {
+                    booking_id: result1.booking_id,
+                    tanggal_mulai: pick_up_date,
+                    tanggal_selesai: return_date,
+                    with_driver: is_with_driver,
+                    total_harga: totalPriceValue,
+                    car_id: car_id
+                };
+                const response2 = await fetch(url2, {
+                    method: 'POST',
+                    body: JSON.stringify(data1)
+                });
+
+                if (!response2.ok) {
+                    throw new Error(`HTTP error! Status: ${response2.status}`);
+                } else {
+                    Swal.fire({
+                        title: "Success",
+                        text: "Booking success!",
+                        icon: "success"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = `http://3.226.141.243:8004/payment.php?booking_code=${result1.booking_code}`;
+                        }
+                    });
+                }
+
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    async function coba() {
+
+        const data = {
+            user_id: 1,
+            type: "Rental",
+            total_price: totalPriceValue,
+            provider_name: providerName,
+            car_id: car_id,
+            asuransi_id: asuransi_id,
+            pick_up_date: pickup,
+            return_date: get_return_date,
+            pick_up_location: pick_up_location.value,
+            return_location: return_location.value,
+            is_with_driver: is_with_driver,
+            service_id: service_id
+        };
+        try {
+            const urlPost = `http://localhost:8000/booking`
+            const response1 = await fetch(urlPost, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+            if (!response1.ok) {
+                throw new Error(`HTTP error! Status: ${response1.status}`);
+            }
+            const result1 = await response1.json();
+            console.log(result1)
+        } catch (error) {
+
+        }
+    }
+    submitButton.addEventListener('click', function () {
+        coba()
+    })
 
 });
 

@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    var buttonPost = document.getElementById('post');
+    var buttonPost = document.getElementById('book');
     buttonPost.addEventListener('click', function () {
         sendBookingData();
     })

@@ -16,8 +16,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const class_visit_date = document.getElementsByClassName('class_visit_date')
     const count = document.getElementById('count')
     const ticket_price_1 = document.getElementById('ticket_price_1')
+    const submitButton = document.getElementById('book')
     const service_url = ''
     let ticketPriceValue = 0
+    let totalPriceValue = 0
     let providerName = 'Dufan'
 
 
@@ -192,10 +194,94 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 
     function updateTotalPrice() {
-        const totalPriceValue = ticketPriceValue * counterValue;
+        totalPriceValue = ticketPriceValue * counterValue;
         total_price.innerHTML = `Rp. ${formatRupiah(totalPriceValue)}`;
     }
     getTicketData()
+
+    async function postBookingAttraction() {
+        const data = {
+            user_id: 1,
+            type: "Attraction",
+            total_price: totalPriceValue,
+            provider_name: providerName,
+            paket_attraction_id: packet_attraction_id,
+            visit_date: get_visit_date,
+            number_of_tickets: counterValue,
+            service_id: service_id
+        };
+        try {
+            const urlPost = `http://3.226.141.243:8004/booking`
+            const response1 = await fetch(urlPost, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+            if (!response1.ok) {
+                throw new Error(`HTTP error! Status: ${response1.status}`);
+            }
+            const result1 = await response1.json();
+            if (result1.status == 200) {
+                const url2 = `${service_url}/api/eticket`
+                const data1 = {
+                    customer_name: customer_name.value,
+                    flight_code: flight_code,
+                    flight_date: flight_date
+                };
+                const response2 = await fetch(url2, {
+                    method: 'POST',
+                    body: JSON.stringify(data1)
+                });
+
+                if (!response2.ok) {
+                    throw new Error(`HTTP error! Status: ${response2.status}`);
+                } else {
+                    Swal.fire({
+                        title: "Success",
+                        text: "Booking success!",
+                        icon: "success"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = `http://3.226.141.243:8004/payment.php?booking_code=${result1.booking_code}`;
+                        }
+                    });
+                }
+
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    async function coba() {
+        const data = {
+            user_id: 1,
+            type: "Attraction",
+            total_price: totalPriceValue,
+            provider_name: providerName,
+            paket_attraction_id: packet_attraction_id,
+            visit_date: get_visit_date,
+            number_of_tickets: counterValue,
+            service_id: service_id
+        };
+        try {
+            const urlPost = `http://localhost:8000/booking`
+            const response1 = await fetch(urlPost, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+            if (!response1.ok) {
+                throw new Error(`HTTP error! Status: ${response1.status}`);
+            }
+            const result1 = await response1.json();
+            console.log(result1)
+        } catch (error) {
+
+        }
+    }
+    submitButton.addEventListener('click', function () {
+        coba()
+    })
 
 });
 

@@ -20,9 +20,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const departure_time = document.getElementById('departure_time')
     const arrival_time = document.getElementById('arrival_time')
     const capacity = document.getElementById('capacity')
+    const submitButton = document.getElementById('book')
     const weight = document.getElementById('weight')
     const service_url = ''
     let insurancePrice = 0
+    let asuransi_id = 0
+    let ticketPrice = 0
+    let totalPriceValue = 0
     let providerName = 'Garuda Indonesia'
 
     console.log(service_id)
@@ -151,6 +155,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         arrival_time.innerHTML = result[0].end_time
         capacity.innerHTML = result[0].capacity
         weight.innerHTML = result[0].weight
+        totalPriceValue += result[0].price
 
         // try {
         //     const url = `${service_url}/hotel/room_type/${room_id}`
@@ -180,6 +185,92 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     }
     getFlightData()
+
+    async function postBookingAirline() {
+        const data = {
+            user_id: 1,
+            type: "Airline",
+            total_price: totalPriceValue,
+            provider_name: providerName,
+            asuransi_id: asuransi_id == -1 ? null : asuransi_id,
+            flight_id: flight_code,
+            flight_date: flight_date,
+            service_id: service_id
+        };
+        try {
+            const urlPost = `http://3.226.141.243:8004/booking`
+            const response1 = await fetch(urlPost, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+            if (!response1.ok) {
+                throw new Error(`HTTP error! Status: ${response1.status}`);
+            }
+            const result1 = await response1.json();
+            if (result1.status == 200) {
+                const url2 = `${service_url}/post_ticket`
+                const data1 = {
+                    customer_name: customer_name.value,
+                    flight_code: flight_code,
+                    flight_date: flight_date
+                };
+                const response2 = await fetch(url2, {
+                    method: 'POST',
+                    body: JSON.stringify(data1)
+                });
+
+                if (!response2.ok) {
+                    throw new Error(`HTTP error! Status: ${response2.status}`);
+                } else {
+                    Swal.fire({
+                        title: "Success",
+                        text: "Booking success!",
+                        icon: "success"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = `http://3.226.141.243:8004/payment.php?booking_code=${result1.booking_code}`;
+                        }
+                    });
+                }
+
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    async function coba() {
+        const data = {
+            user_id: 1,
+            type: "Airline",
+            total_price: totalPriceValue,
+            provider_name: providerName,
+            asuransi_id: asuransi_id,
+            flight_id: flight_code,
+            flight_date: flight_date,
+            service_id: service_id
+        };
+        try {
+            const urlPost = `http://localhost:8000/booking`
+            const response1 = await fetch(urlPost, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+            if (!response1.ok) {
+                throw new Error(`HTTP error! Status: ${response1.status}`);
+            }
+            const result1 = await response1.json();
+            console.log(result1)
+        } catch (error) {
+
+        }
+    }
+
+    submitButton.addEventListener('click', function () {
+        console.log('check')
+        coba()
+    })
 
 });
 

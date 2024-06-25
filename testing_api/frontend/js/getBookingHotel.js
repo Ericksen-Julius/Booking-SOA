@@ -1,5 +1,5 @@
 
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', function () {
     const params = new URLSearchParams(window.location.search);
     const service_id = params.get('service_id');
     const check_in = params.get('checkin');
@@ -17,7 +17,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const count = document.getElementById('count')
     const room_price_1 = document.getElementById('room_price1')
     const service_url = ''
+    const submitButton = document.getElementById('book')
     let roomPriceValue = 0
+    let counterValue = 1
+    let totalPriceValue = roomPriceValue * counterValue;
     let providerName = 'Merlyn Hotel'
 
     console.log(check_in)
@@ -54,6 +57,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     total_night.innerHTML = totalNights == 1 ? `(${totalNights} night)` : `(${totalNights} night)`
 
 
+
     // async function getRoomData() {
     //     try {
     //         const response = await fetch(`http://52.200.174.164:8003/service/${service_id}`, {
@@ -65,6 +69,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     //         }
     //         const result = await response.json()
     //         provider_name.innerHTML = result.data.provider_name
+    //          providerName = result.data.provider_name
     //         service_url = result.data.service_url
 
     //     } catch (error) {
@@ -117,7 +122,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const decreaseButton = document.getElementById('decrease');
     const increaseButton = document.getElementById('increase');
 
-    let counterValue = 1;
     decreaseButton.addEventListener('click', () => {
         if (counterValue > 1) {
             counterValue--;
@@ -135,10 +139,127 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 
     function updateTotalPrice() {
-        const totalPriceValue = roomPriceValue * counterValue;
+        totalPriceValue = roomPriceValue * counterValue;
         total_price.innerHTML = `Rp. ${formatRupiah(totalPriceValue)}`;
     }
     // getRoomData()
+
+    async function postBookingHotel() {
+        console.log(counterValue)
+        const data = {
+            user_id: 1,
+            type: "Hotel",
+            total_price: totalPriceValue,
+            provider_name: providerName,
+            room_type: room_id,
+            check_in_date: check_in,
+            check_out_date: check_out,
+            number_of_rooms: counterValue
+        };
+        try {
+            const url = `${service_url}/hotel/room_type/${check_in}&${check_out}`
+            const response = await fetch(url, {
+                method: 'GET'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json()
+            result = result.filter(room => room.id === room_id);
+            if (result.total_room >= number_of_rooms) {
+                const urlPost = `http://3.226.141.243:8004/booking`
+                const response1 = await fetch(urlPost, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+
+                if (!response1.ok) {
+                    throw new Error(`HTTP error! Status: ${response1.status}`);
+                }
+
+                const result1 = await response1.json();
+                if (result1.status == 200) {
+                    const url2 = `${service_url}/hotel/reservation`
+                    const data1 = {
+                        booking_id: result1.booking_id,
+                        check_in_date: check_in,
+                        check_out_date: check_out,
+                        type_room: room_id,
+                        total_room: counterValue
+                    };
+                    const response2 = await fetch(url2, {
+                        method: 'POST',
+                        body: JSON.stringify(data1)
+                    });
+
+                    if (!response2.ok) {
+                        throw new Error(`HTTP error! Status: ${response2.status}`);
+                    } else {
+                        Swal.fire({
+                            title: "Success",
+                            text: "Booking success!",
+                            icon: "success"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = `http://3.226.141.243:8004/payment.php?booking_code=${result1.booking_code}`;
+                            }
+                        });
+                    }
+
+                }
+            } else {
+
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    async function coba() {
+        console.log(counterValue)
+        console.log(providerName)
+        console.log(check_in)
+        console.log(check_out)
+        console.log(room_id)
+        totalPriceValue = 200000
+        console.log(totalPriceValue)
+        // Swal.fire({
+        //     title: "Success",
+        //     text: "Booking success!",
+        //     icon: "success"
+        // })
+        const data2 = {
+            user_id: 1,
+            type: "Hotel",
+            total_price: totalPriceValue,
+            provider_name: providerName,
+            room_type: room_id,
+            check_in_date: check_in,
+            check_out_date: check_out,
+            number_of_rooms: counterValue,
+            service_id: service_id
+        };
+        try {
+            const response1 = await fetch('http://localhost:8000/booking', {
+                method: 'POST',
+                body: JSON.stringify(data2)
+            });
+
+            if (!response1.ok) {
+                throw new Error(`HTTP error! Status: ${response1.status}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+
+    }
+
+    submitButton.addEventListener('click', function () {
+        coba()
+    })
 
 });
 
