@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 25, 2024 at 09:36 AM
+-- Generation Time: Jun 25, 2024 at 10:53 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -170,7 +170,6 @@ CREATE TABLE `reviews` (
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-<<<<<<< HEAD
 --
 -- Dumping data for table `reviews`
 --
@@ -286,8 +285,6 @@ INSERT INTO `review_selections` (`id`, `review_id`, `option_id`) VALUES
 (10, 10, 9);
 
 --
-=======
->>>>>>> aebab9199184cf930851870e80c49998c3c89a7b
 -- Indexes for dumped tables
 --
 
