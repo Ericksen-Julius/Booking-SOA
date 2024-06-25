@@ -420,6 +420,32 @@ class DatabaseWrapper:
             return {'data': results, 'status': 200}
         except Exception as e:
             return {'error': str(e), 'status': 500}
+        
+    def get_rating_provider(self, provider_name):
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            sql = """
+                    SELECT 
+                        ROUND(AVG(b.rating), 2) AS average_rating,
+                        COUNT(DISTINCT b.booking_id) AS total_reviewers
+                    FROM 
+                        bookings AS a
+                        JOIN reviews AS b ON a.id = b.booking_id
+                    WHERE 
+                        a.provider_name = %s;
+                """
+            cursor.execute(sql, (provider_name,))
+            results = cursor.fetchone()
+            cursor.close()
+            results['average_rating'] = float(results['average_rating']) if results['average_rating'] != None else 0
+            results['total_reviewers'] = (results['total_reviewers']) if results['total_reviewers'] != None else 0
+
+            if not results:
+                return {'error': 'No data found', 'status': 404}
+            return {'data': results, 'status': 200}
+        except Exception as e:
+            return {'error': str(e), 'status': 500}
+
 
     def get_information_provider(self, provider_name):
         try:

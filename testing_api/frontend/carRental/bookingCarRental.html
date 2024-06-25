@@ -14,6 +14,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="css/booking_rental.css" rel="stylesheet">
     <title>Booking Car Rental</title>
+    <script src="../js/getBookingRental.js"></script>
 </head>
 
 <body style="background-color: #F7F9FA;">
@@ -28,14 +29,17 @@
                         <h4 class="text-secondary">Price Details</h4>
                         <div class="row">
                             <div class="col-lg-4 col-md-6 col-sm-12">
-                                <img src="./assets/fortuner.jpg" class="img-fluid rounded mb-3" alt="Car Image">
+                                <img src="./assets/fortuner.jpg" class="img-fluid rounded mb-3" id="car_image"
+                                    alt="Car Image">
                             </div>
                             <div class="col-lg-8 col-md-6 col-sm-12 d-flex align-items-center">
                                 <div>
-                                    <p class="icon-text"><i class="fa-solid fa-chair"></i> 6 Seats</p>
-                                    <p class="icon-text"><i class="fa-solid fa-suitcase"></i> 4 Baggages</p>
-                                    <p class="icon-text"><i class="fa-solid fa-cogs"></i> Manual</p>
-                                    <p class="icon-text"><i class="fa-solid fa-certificate"></i> 2019 or newer</p>
+                                    <p class="icon-text" id="seats"><i class="fa-solid fa-chair"></i> 6 Seats</p>
+                                    <p class="icon-text" id="luggages"><i class="fa-solid fa-suitcase"></i> 4 Baggages
+                                    </p>
+                                    <p class="icon-text" id="transmission"><i class="fa-solid fa-cogs"></i> Manual</p>
+                                    <p class="icon-text" id="year"><i class="fa-solid fa-certificate"></i> 2019 or
+                                        newer</p>
                                 </div>
                             </div>
                         </div>
@@ -44,77 +48,71 @@
                         </p> -->
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <p class="mb-0">Rental Price</p>
-                            <p class="mb-0">Rp 772.000</p>
+                            <p class="mb-0" id="rental_price">Rp 772.000</p>
                         </div>
-                        <p style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mt-0">(1x) Fortuner (2 Days)</p>
+                        <p style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mt-0 car_name">
+                            <span>Fortuner</span> <span id="day_rental">(2 Days)</span>
+                        </p>
                         <hr>
                         <div class="d-flex justify-content-between mb-3">
                             <h3 class="fw-bold">Total Price</h3>
-                            <h3 class="text-success fw-bold">Rp 772.000</h3>
+                            <h3 class="text-success fw-bold" id="total_price">Rp 772.000</h3>
                         </div>
-                        <button class="btn btn-danger text-light w-100 fs-5 fw-bolder py-2">Continue to payment</button>
+                        <button class="btn btn-danger text-light w-100 fs-5 fw-bolder py-2">Book Now</button>
                     </div>
-                    <div class="rounded bg-white shadow-sm p-4">
+                    <div class="rounded bg-white shadow-sm p-4 mb-3">
                         <p class="fw-bolder mb-2">Additional Policy</p>
                         <p style="color: rgb(104, 113, 118);">Ensure you adhere to the policies to avoid any
                             inconveniences.</p>
                         <p class="fw-bolder mb-2">General Pick-up and Drop-off Instructions</p>
                         <p style="color: rgb(104, 113, 118);">Please arrive 15 minutes early for smooth processing.</p>
                     </div>
+                    <div class="rounded bg-white shadow-sm p-4">
+                        <div class="row">
+                            <div class="col-lg-6 col-12 mb-3">
+                                <label for="pickup" class="form-label">Pick up location</label>
+                                <input type="text" class="form-control" id="pickup" placeholder="Gedung Q Petra">
+                            </div>
+                            <div class="col-lg-6 col-12 mb-3">
+                                <label for="return" class="form-label">Return location</label>
+                                <input type="text" class="form-control" id="return" placeholder="Gedung Q Petra">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-4 col-12">
                 <div class="rounded bg-white shadow-sm p-4">
                     <p style="color: rgb(104, 113, 118); font-size: 1.5em;">Provided By</p>
-                    <p class="fw-bolder" style="font-size: 2em;">Yanto Car</p>
-                    <p style="color: #FFD43B;"><i class="fa-solid fa-star"></i> 8.7 <span
-                            class="text-dark">(17,926)</span></p>
-                    <div id="carouselExample" class="carousel slide mb-3">
-                        <div class="carousel-inner rounded">
-                            <div class="carousel-item active">
-                                <img src="./assets/prabowo.jpg" class="d-block w-100" alt="...">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="./assets/prabowo2.webp" class="d-block w-100" alt="...">
-                            </div>
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
-                            data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
-                            data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
-                    </div>
+                    <p class="fw-bolder" style="font-size: 2em;" id="provider_name">Yanto Car</p>
+                    <p style="color: #FFD43B;"><i class="fa-solid fa-star"></i> <span id="rating">9.0</span></p>
+                    <img src="../assets/hotel.jpeg" class="d-block w-100 mb-3" id="image_wrapper" alt="...">
                     <div class="row px-3 mb-2">
                         <div class="col-12 border rounded d-flex flex-column align-items-center mb-2">
                             <p style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mb-1">Start Time</p>
-                            <p class="mb-1">Tue, 18 Jun 2024</p>
+                            <p class="mb-1" id="pick_up_date">Tue, 18 Jun 2024</p>
                             <p class="mb-1" style="color: rgb(104, 113, 118); font-size: 0.75em;">From 09:00</p>
-                            <strong style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mb-1">Pick-up
+                            <!-- <strong style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mb-1">Pick-up
                                 Location:</strong>
                             <p style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mb-1">Soekarno Hatta
-                                International Airport (CGK)</p>
+                                International Airport (CGK)</p> -->
                         </div>
                         <div class="text-center my-2">
                             <i class="fa-solid fa-arrow-down" style="font-size: 1.5em; color: rgb(104, 113, 118);"></i>
                         </div>
                         <div class="col-12 border rounded d-flex flex-column align-items-center">
                             <p style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mb-1">End Time</p>
-                            <p class="mb-1">Thu, 20 Jun 2024</p>
+                            <p class="mb-1" id="return_date">Thu, 20 Jun 2024</p>
                             <p class="mb-1" style="color: rgb(104, 113, 118); font-size: 0.75em;">From 09:00</p>
-                            <strong style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mb-1">Drop-off
+                            <!-- <strong style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mb-1">Drop-off
                                 Location:</strong>
                             <p style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mb-1">Soekarno Hatta
-                                International Airport (CGK)</p>
+                                International Airport (CGK)</p> -->
                         </div>
                     </div>
                     <ul class="list-unstyled mt-3">
                         <li class="fw-bolder mb-2">
-                            <span class="d-block" style="font-size: 1.1em;">(1x) Fortuner (2 Days)</span>
+                            <span class="d-block" style="font-size: 1.1em;"> <span class="car_name">Fortune</span>
                         </li>
                         <li class="mb-2">
                             <div class="form-check d-flex align-items-start">

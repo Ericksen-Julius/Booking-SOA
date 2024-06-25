@@ -20,6 +20,10 @@ class ReviewService:
     def get_information_provider(self,provider_name):
         response = self.database.get_information_provider(provider_name=provider_name)
         return response
+    @rpc
+    def get_rating_provider(self,provider_name):
+        response = self.database.get_rating_provider(provider_name=provider_name)
+        return response
 
     # @rpc
     # def get_reviews_by_booking(self, booking_id):

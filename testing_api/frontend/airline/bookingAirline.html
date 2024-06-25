@@ -17,10 +17,11 @@
         integrity="sha512-UuQ/zJlbMVAw/UU8vVBhnI4op+/tFOpQZVT+FormmIEhRSCnJWyHiBbEVgM4Uztsht41f3FzVWgLuwzUqOObKw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="css/booking_airline.css" rel="stylesheet">
+    <script src="../js/getBookingAirline.js"></script>
 
     <title>Booking Airline</title>
     <style>
-        
+
     </style>
 </head>
 
@@ -64,54 +65,70 @@
                         before it gets higher!
                     </p>
                     <div class="d-flex justify-content-between align-items-center">
-                        <p class="mb-0">Garuda Indonesia x1</p>
-                        <p class="mb-0">Rp 772.000</p>
+                        <p class="mb-0" class="provider_name">Garuda Indonesia</p>
+                        <p class="mb-0" id="ticket_price">Rp 772.000</p>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center" id="insurance">
                         <p class="mb-0">+ Travel Insurance</p>
-                        <p class="mb-0">Rp 72.000</p>
+                        <p class="mb-0" id="insurance_price">Rp 72.000</p>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between mb-3">
                         <h3>Total Price</h3>
-                        <h3 class="text-success">Rp 772.000</h3>
+                        <h3 class="text-success" id="total_price">Rp 772.000</h3>
                     </div>
-                    <button class="btn btn-danger text-light w-100 fs-5 fw-bolder py-2">Continue to payment</button>
+                    <button class="btn btn-danger text-light w-100 fs-5 fw-bolder py-2">Book Now</button>
                 </div>
             </div>
             <div class="col-lg-5 col-12">
+                <div class="rounded bg-white p-3 mb-3">
+                    <div class="col-12 col-12 mb-3">
+                        <label for="customer_name" class="form-label">Customer Name</label>
+                        <input type="text" class="form-control" id="customer_name" placeholder="Yanto">
+                    </div>
+                </div>
                 <div class="rounded bg-white p-3">
-                    <p class="fw-bolder"><i class="fa-solid fa-plane fa-xl" style="color: #74C0FC;"></i> Jakarta
-                        -> Bali</p>
+                    <p class="fw-bolder"><i class="fa-solid fa-plane fa-xl" style="color: #74C0FC;"></i> <span
+                            class="origin">Jakarta</span>
+                        -> <span class="destination">Bali</span></p>
+                    <p style="color: #FFD43B;"><i class="fa-solid fa-star"></i> <span id="rating">9.0</span></p>
                     <hr>
                     <p class="mb-1 fw-bolder">
-                        Departure • Sun, 16 Jun 2024
+                        Departure • <span id="flight_date">Sun, 16 Jun 2024</span>
                     </p>
                     <div class="row align-items-center">
                         <div class="col-3">
-                            <img src="./assets/garuda.jpg" class="w-100">
+                            <img src="../assets/garuda.jpg" class="w-100">
                         </div>
                         <div class="col-9">
-                            <p class="mb-1 fw-bolder">
+                            <p class="mb-1 fw-bolder" class="provider_name">
                                 Garuda Indonesia
                             </p>
-                            <p class="mb-1" style="color: rgb(104, 113, 118); font-size: 0.75em;">Economy</p>
+                            <p class="mb-1" style="color: rgb(104, 113, 118); font-size: 0.75em;" id="flight_type">
+                                Economy</p>
                         </div>
                     </div>
                     <div class="row px-3 mb-2">
                         <div class="col-5 border rounded d-flex flex-column align-items-center">
-                            <p style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mb-1">Jakarta</p>
-                            <p class="mb-1">18:45</p>
-                            <p class="mb-1" style="color: rgb(104, 113, 118); font-size: 0.75em;">CGK</p>
+                            <p style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mb-1 origin">Jakarta</p>
+                            <p class="mb-1" id="departure_time">18:45</p>
+                            <p class="mb-1" style="color: rgb(104, 113, 118); font-size: 0.75em;" id="origin_airport">
+                                CGK</p>
                         </div>
                         <div class="col-2 my-auto">
                             <hr>
                         </div>
                         <div class="col-5 border rounded d-flex flex-column align-items-center">
-                            <p style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mb-1">Bali</p>
-                            <p class="mb-1">21:40</p>
-                            <p class="mb-1" style="color: rgb(104, 113, 118); font-size: 0.75em;">DPS</p>
+                            <p style="color: rgb(104, 113, 118); font-size: 0.75em;" class="mb-1 destination">Bali</p>
+                            <p class="mb-1" id="arrival_time">21:40</p>
+                            <p class="mb-1" style="color: rgb(104, 113, 118); font-size: 0.75em;"
+                                id="destination_airport">
+                                DPS</p>
                         </div>
+                    </div>
+                    <div class="row px-3 mb-2">
+                        <div class="col-6 fw-bolder">Capacity: <span class="fw-normal" id="capacity">100</span></div>
+                        <div class="col-6 fw-bolder">Weight: <span class="fw-normal" id="weight">30</span></div>
                     </div>
                 </div>
             </div>
