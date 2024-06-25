@@ -276,7 +276,6 @@ CREATE TABLE `reviews` (
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
 -- Indexes for dumped tables
 --
 
@@ -316,23 +315,11 @@ ALTER TABLE `booking_rentals`
 
 --
 -- Indexes for table `migrations`
---
-ALTER TABLE `migrations`
-  ADD PRIMARY KEY (`id`);
+
 
 --
 -- Indexes for table `refund`
 --
-ALTER TABLE `refund`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `refund_booking_id_foreign` (`booking_id`);
-
---
--- Indexes for table `reviews`
---
-ALTER TABLE `reviews`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `reviews_booking_id_foreign` (`booking_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -411,15 +398,6 @@ ALTER TABLE `booking_rentals`
 --
 -- Constraints for table `refund`
 --
-ALTER TABLE `refund`
-  ADD CONSTRAINT `refund_booking_id_foreign` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `reviews`
---
-ALTER TABLE `reviews`
-  ADD CONSTRAINT `reviews_booking_id_foreign` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE;
-COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
