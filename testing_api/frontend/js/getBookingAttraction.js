@@ -224,9 +224,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
             if (result1.status == 200) {
                 const url2 = `${service_url}/api/eticket`
                 const data1 = {
-                    customer_name: customer_name.value,
-                    flight_code: flight_code,
-                    flight_date: flight_date
+                    _token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoidGlwZW4ifQ.bFPsfkx60z4QfIGTJNgrB4nRBtF727hN6lUGIp1u9Nw",
+                    paket_id: paket_attraction_id,
+                    jml_ticket: counterValue,
+                    booking_code: result1.booking_code,
+                    tgl_booking: get_visit_date
                 };
                 const response2 = await fetch(url2, {
                     method: 'POST',
@@ -242,7 +244,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         icon: "success"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = `http://3.226.141.243:8004/payment.php?booking_code=${result1.booking_code}`;
+                            window.location.href = `http://3.226.141.243:8004/paymentTempatAtraksi.php?booking_code=${result1.booking_code}&booking_id=${result1.booking_id}`;
                         }
                     });
                 }

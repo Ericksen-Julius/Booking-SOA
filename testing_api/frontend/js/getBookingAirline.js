@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         icon: "success"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = `http://3.226.141.243:8004/payment.php?booking_code=${result1.booking_code}`;
+                            window.location.href = `http://3.226.141.243:8004/paymentPesawat.php?booking_code=${result1.booking_code}&booking_id=${result1.booking_id}`;
                         }
                     });
                 }

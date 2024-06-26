@@ -217,9 +217,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
             const result1 = await response1.json();
             if (result1.status == 200) {
-                const url2 = `${service_url}/booking_car`
+                const url2 = `${service_url}/booking_add`
                 const data1 = {
-                    booking_id: result1.booking_id,
                     tanggal_mulai: pick_up_date,
                     tanggal_selesai: return_date,
                     with_driver: is_with_driver,
@@ -240,7 +239,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         icon: "success"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = `http://3.226.141.243:8004/payment.php?booking_code=${result1.booking_code}`;
+                            window.location.href = `http://3.226.141.243:8004/paymentRental.php?booking_code=${result1.booking_code}&booking_id=${result1.booking_id}`;
                         }
                     });
                 }

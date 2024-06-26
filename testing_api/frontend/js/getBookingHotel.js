@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const total_night = document.getElementById('total_night')
     const count = document.getElementById('count')
     const room_price_1 = document.getElementById('room_price1')
-    const service_url = ''
+    let service_url = ''
     const submitButton = document.getElementById('book')
     let roomPriceValue = 0
     let counterValue = 1
@@ -60,21 +60,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function getRoomData() {
         try {
-            const response = await fetch(`http://52.200.174.164:8003/service/${service_id}`, {
+            const response = await fetch(`http://107.20.145.163:8003/service/${service_id}`, {
                 method: 'GET',
             });
+
 
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const result = await response.json()
-            provider_name.innerHTML = result.data.provider_name
-            providerName = result.data.provider_name
-            service_url = result.data.service_url
-
+            console.log(result)
+            provider_name.innerHTML = result.data.nama
+            providerName = result.data.nama
+            service_url = result.data.url
+            console.log(service_url)
         } catch (error) {
             console.error('Error:', error);
         }
+        return
 
         try {
             const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
@@ -143,10 +146,12 @@ document.addEventListener('DOMContentLoaded', function () {
         totalPriceValue = roomPriceValue * counterValue;
         total_price.innerHTML = `Rp. ${formatRupiah(totalPriceValue)}`;
     }
-    // getRoomData()
+    getRoomData()
 
     async function postBookingHotel() {
-        console.log(counterValue)
+        console.log(check_in)
+        console.log(check_out)
+        console.log(room_id)
         const data = {
             user_id: 1,
             type: "Hotel",
@@ -158,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
             number_of_rooms: counterValue
         };
         try {
-            const url = `http://3.215.46.161:8013/hotel/room_type/"${check_in}"&"${check_out}"`
+            const url = `http://3.215.46.161:8011/hotel/room_type/"${check_in}"&"${check_out}"`
             const response = await fetch(url, {
                 method: 'GET'
             });
@@ -167,10 +172,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
-            const result = await response.json()
-            result = result.filter(room => room.id === room_id);
-            console.log(result)
-            if (result.total_room >= number_of_rooms) {
+            var result = await response.json()
+            console.log(result[0])
+            var result2 = result.find(room => room.id === room_id);
+            console.log(result2)
+            return
+            if (result.total_room >= counterValue) {
                 const urlPost = `http://localhost:8000/booking`
                 const response1 = await fetch(urlPost, {
                     method: 'POST',
@@ -192,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         type_room: room_id,
                         total_room: counterValue
                     };
-                    const response2 = await fetch(url2, {
+                    const response2 = await fetch("http://3.215.46.161:8013/hotel/reservation", {
                         method: 'POST',
                         body: JSON.stringify(data1)
                     });
@@ -207,9 +214,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             text: "Booking success!",
                             icon: "success"
                         }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = `http://3.226.141.243:8004/payment.php?booking_code=${result1.booking_code}`;
-                            }
+                            // if (result.isConfirmed) {
+                            //     window.location.href = `http://3.226.141.243:8004/paymentHotel.php?booking_code=${result1.booking_code}&booking_id=${result1.booking_id}`;
+                            // }
                         });
                     }
 
@@ -263,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     submitButton.addEventListener('click', function () {
-        coba()
+        postBookingHotel()
     })
 
 });

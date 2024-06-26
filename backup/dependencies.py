@@ -479,17 +479,17 @@ class DatabaseWrapper:
             return {'error': str(e), 'status': 500}
 
 
-    # def add_review_selection(self, option_ids, inserted_id):
-    #     try:
-    #         cursor = self.connection.cursor(dictionary=True)
-    #         sql = "INSERT INTO review_selections (`review_id`, `option_id`) VALUES (%s, %s)"
-    #         for option_id in option_ids:
-    #             cursor.execute(sql, (inserted_id, option_id))
-    #         self.connection.commit()
-    #         cursor.close()
-    #         return {'success': True}
-    #     except Exception as e:
-    #         return {'error': str(e), 'success': False}
+    def add_review_selection(self, option_ids, inserted_id):
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            sql = "INSERT INTO review_selections (`review_id`, `option_id`) VALUES (%s, %s)"
+            for option_id in option_ids:
+                cursor.execute(sql, (inserted_id, option_id))
+            self.connection.commit()
+            cursor.close()
+            return {'success': True}
+        except Exception as e:
+            return {'error': str(e), 'success': False}
 
     # def get_reviews_by_booking(self, booking_id):
     #     try:
@@ -635,17 +635,17 @@ class DatabaseWrapper:
     #         error_message = str(e)
     #         return {'error': error_message, 'status': 500}
         
-    # def check_booking_exists(self, booking_id):
-    #     try:
-    #         cursor = self.connection.cursor(dictionary=True)
-    #         sql = "SELECT * FROM `bookings` WHERE id=%s"
-    #         cursor.execute(sql, (booking_id,))
-    #         booking = cursor.fetchone()
-    #         cursor.close()
-    #         return booking is not None
-    #     except Exception as e:
-    #         error_message = str(e)
-    #         return False
+    def check_booking_exists(self, booking_id):
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            sql = "SELECT * FROM `bookings` WHERE id=%s"
+            cursor.execute(sql, (booking_id,))
+            booking = cursor.fetchone()
+            cursor.close()
+            return booking is not None
+        except Exception as e:
+            error_message = str(e)
+            return False
     
     # def get_refunds_by_booking(self, booking_id):
     #     try:
