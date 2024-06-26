@@ -75,6 +75,8 @@ class DatabaseWrapper:
                     a.service_id,
                     a.provider_name,
                     a.booking_code,
+                    a.booking_type,
+                    a.id,
                     CAST(a.total_price AS INT) AS total_price,
                     b.room_type,
                     b.check_in_date,
@@ -102,7 +104,9 @@ class DatabaseWrapper:
                 SELECT 
                     a.service_id,
                     a.booking_code,
+                    a.booking_type,
                     a.provider_name,
+                    a.id,
                     CAST(a.total_price AS INT) AS total_price,
                     a.asuransi_id,
                     b.flight_id,
@@ -127,6 +131,8 @@ class DatabaseWrapper:
                     a.service_id,
                     a.booking_code,
                     a.provider_name,
+                    a.booking_type,
+                    a.id,
                     CAST(a.total_price AS INT) AS total_price,
                     a.asuransi_id,
                     b.pickup_date,
@@ -157,6 +163,8 @@ class DatabaseWrapper:
                     a.service_id,
                     a.booking_code,
                     a.provider_name,
+                    a.booking_type,
+                    a.id,
                     CAST(a.total_price AS INT) AS total_price,
                     b.visit_date,
                     b.paket_attraction_id
@@ -685,28 +693,14 @@ class DatabaseWrapper:
     #         return {'error': error_message, 'status': 500}
         
     
-    def get_completed_booking(self, user_id):
+    def get_completed_booking(self, booking_type):
         try:
             cursor = self.connection.cursor(dictionary=True)
             # SQL to get completed bookings that do not have a review yet
             sql = """
-                SELECT 
-                    b.id AS booking_id, 
-                    b.booking_type,
-                    ro.id AS review_option_id, 
-                    ro.option_text
-                FROM 
-                    bookings b
-                LEFT JOIN 
-                    reviews r ON b.id = r.booking_id
-                JOIN 
-                    review_options ro ON ro.provider_type = b.booking_type
-                WHERE 
-                    b.user_id = %s 
-                    AND b.status = 'completed'
-                    AND r.id IS NULL;
+                SELECT rating_group,option_text FROM review_options WHERE provider_type = %s;
             """
-            cursor.execute(sql, (user_id,))
+            cursor.execute(sql, (booking_type,))
             results = cursor.fetchall()
             cursor.close()
 
@@ -732,7 +726,7 @@ class Database(DependencyProvider):
                 pool_size=10,
                 pool_reset_session=True,
                 host='localhost',
-                database='microservices_soa_h_2',
+                database='microservices_soa_h',
                 user='root',
                 password=''
             )
