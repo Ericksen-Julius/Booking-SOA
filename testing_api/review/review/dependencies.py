@@ -114,11 +114,41 @@ class DatabaseWrapper:
             return {'data': results, 'status': 200}
         except Exception as e:
             return {'error': str(e), 'status': 500}
+    
+    def get_completed_booking(self, user_id):
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            # SQL to get completed bookings that do not have a review yet
+            sql = """
+                SELECT 
+                    b.id AS booking_id, 
+                    b.booking_type,
+                    ro.id AS review_option_id, 
+                    ro.option_text
+                FROM 
+                    bookings b
+                LEFT JOIN 
+                    reviews r ON b.id = r.booking_id
+                JOIN 
+                    review_options ro ON ro.provider_type = b.booking_type
+                WHERE 
+                    b.user_id = %s 
+                    AND b.status = 'completed'
+                    AND r.id IS NULL;
+            """
+            cursor.execute(sql, (user_id,))
+            results = cursor.fetchall()
+            cursor.close()
 
+            if not results:
+                return {'error': 'No completed bookings without reviews found', 'status': 404}
+            return {'data': results, 'status': 200}
+        except Exception as e:
+            return {'error': str(e), 'status': 500}
 
 
     def __del__(self):
-       self.connection.close()
+        self.connection.close()
 
 
 class Database(DependencyProvider):
@@ -133,7 +163,7 @@ class Database(DependencyProvider):
                 pool_reset_session=True,
                 host='booking-mysql',
                 port="3306",
-                database='microservices_soa_h',
+                database='microservices_soa_h_2',
                 user='root',
                 password='password'
             )

@@ -685,20 +685,36 @@ class DatabaseWrapper:
     #         return {'error': error_message, 'status': 500}
         
     
+    def get_completed_booking(self, user_id):
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            # SQL to get completed bookings that do not have a review yet
+            sql = """
+                SELECT 
+                    b.id AS booking_id, 
+                    b.booking_type,
+                    ro.id AS review_option_id, 
+                    ro.option_text
+                FROM 
+                    bookings b
+                LEFT JOIN 
+                    reviews r ON b.id = r.booking_id
+                JOIN 
+                    review_options ro ON ro.provider_type = b.booking_type
+                WHERE 
+                    b.user_id = %s 
+                    AND b.status = 'completed'
+                    AND r.id IS NULL;
+            """
+            cursor.execute(sql, (user_id,))
+            results = cursor.fetchall()
+            cursor.close()
 
-
-    # def send_data_to_payment(self, booking_id):
-    #     # Implement communication with payment microservice
-    #     pass
-
-    # def send_data_to_accomodation(self, booking_id):
-    #     # Implement communication with provider
-    #     pass
-
-    # def send_data_to_notification(self, booking_id):
-    #     # Implement notification
-    #     pass
-
+            if not results:
+                return {'error': 'No completed bookings without reviews found', 'status': 404}
+            return {'data': results, 'status': 200}
+        except Exception as e:
+            return {'error': str(e), 'status': 500}
 
 
     def __del__(self):
@@ -716,7 +732,7 @@ class Database(DependencyProvider):
                 pool_size=10,
                 pool_reset_session=True,
                 host='localhost',
-                database='microservices_soa_h',
+                database='microservices_soa_h_2',
                 user='root',
                 password=''
             )

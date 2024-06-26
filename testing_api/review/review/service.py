@@ -20,3 +20,7 @@ class ReviewService:
     def get_information_provider(self,provider_name):
         response = self.database.get_information_provider(provider_name=provider_name)
         return response
+    @rpc
+    def get_completed_booking(self, user_id):
+        response = self.database.get_completed_booking(user_id=user_id)
+        return response
