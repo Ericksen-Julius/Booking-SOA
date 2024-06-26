@@ -4,18 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
-    <link href="C:\File Coding SOA\Nameko Project\Booking-SOA\testing_api\frontend\css\review.css" rel="stylesheet">
+    <link href="../css/review.css" rel="stylesheet">
     <title>Form Reviews</title>
 </head>
 <body>
 
-    <!-- Modal Trigger Button -->
-    <button onclick="openReviewModal()">Review</button>
 
     <!-- The Modal -->
     <div id="reviewModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeReviewModal()">&times;</span>
             <div class="wrapper">
                 <h3>What do you think about your stay?</h3>
                 <form action="#">
@@ -40,7 +37,7 @@
                     </div>
                     <div class="btn-group">
                         <button type="submit" class="btn submit">Submit</button>
-                        <button class="btn cancel" onclick="closeReviewModal()">Review Later</button>
+                        <button class="btn cancel" >Review Later</button>
                     </div>
                 </form>
             </div>
