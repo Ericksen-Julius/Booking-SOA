@@ -1,10 +1,16 @@
+let booking_id = 0;
+let booking_type
+
 async function getData() {
     const params = new URLSearchParams(window.location.search);
     const booking_code = params.get('booking_code');
     const provider = document.getElementById('provider_name');
     const total_price = document.getElementById('totalPrice');
+
+    
     if (!booking_code) {
         document.body.innerHTML = '<h1>Access Denied</h1>';
+        return;
     }
 
     try {
@@ -17,16 +23,89 @@ async function getData() {
         }
         var result = await response.json();
         result = result['booking details']
-        console.log(result)
-        provider.innerHTML = result.provider_name
-        total_price.innerHTML = formatCurrency(result.total_price)
-        let UIType = result.booking_type;
+        booking_id = result.id;
+        booking_type = result.booking_type;
+        console.log("result", booking_id);
+        var url = '';
+        let providerDetails;
+        let resultDetails;
+        console.log(result.booking_code)
+
+        if (result.booking_code.charAt(0) === "H") {
+            try {
+                const response = await fetch(`http://3.215.46.161:8011/hotel`, {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                providerDetails = await response.json();
+                console.log("PROVIDER", providerDetails);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+            try {
+                const response = await fetch(`http://3.215.46.161:8011/hotel/room_type/${result.room_type}`, {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                resultDetails = await response.json();
+
+                console.log("RESULTDETAIL", resultDetails);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        } else if (result.booking_code.charAt(0) == "A") {
+            //AIrline
+        } else if (result.booking_code.charAt(0) == "R") {
+            // Rental
+            try {
+                // Nanti ganti url api rental
+                const response = await fetch(`http://3.215.46.161:8011/hotel`, {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                console.log(providerDetails);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+            try {
+                const response = await fetch(`${url}/car/room_type/${result.car_id}`, {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                resultDetails = await response.json();
+                console.log(providerDetails);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        } else if (result.booking_code.charAt(0) == "T") {
+            // Attraction
+
+        } else {
+            return "Error Booking code not valid", 400;
+        }
+
+        provider.innerHTML = result.provider_name;
+        total_price.innerHTML = formatCurrency(result.total_price);
+        let UIType = result.booking_code.charAt(0);
+
         let details;
         let info = `
             <img src="./assets/hotel.jpeg" alt="" class="w-100 mb-3">
                     <div class="row mb-2">
                         <div class="col-7">
-                            ${result.provider_name}
+                            ${providerDetails.provider_name}
                         </div>
                         <div class="col-1"></div>
                         <div class="col-4 text-primary fw-bolder text-end">
@@ -35,18 +114,17 @@ async function getData() {
                     </div>
                     <div class="row mb-2">
                         <div class="col-12">
-                            Jl. Kubu Anyar No.31, Tuban, Kec. Kuta, Kabupaten Badung
-                            4727177
+                            ${providerDetails.provider_address}
                         </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-12">
-                            Bali
+                            ${providerDetails.provider_city}
                         </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-12">
-                            Indonesia
+                            ${providerDetails.provider_country}
                         </div>
                     </div>
                     <hr style="border: none; border-top: 2px solid #0d6efd;">
@@ -104,7 +182,7 @@ async function getData() {
                 <p>yan@gmail.com</p>
             </div>`;
 
-        if (UIType === 'Hotel') {
+        if (UIType === 'H') {
             details = `
                 <div class="col-sm-3 col-12 m-0 mb-2">
                     <img src="./assets/vip-hotel.jpg" class="w-100" alt="VIP Hotel">
@@ -113,7 +191,7 @@ async function getData() {
                     <div class="row mb-2">
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Room Type</p>
-                            <p>${result.room_type}</p>
+                            <p>${resultDetails.type}</p>
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Night(s)</p>
@@ -125,8 +203,9 @@ async function getData() {
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Price</p>
-                            <p>Rp. 15,000,000</p>
+                            <p>Rp. ${resultDetails.total_price}</p>
                         </div>
+
                     </div>
                     <div class="row mb-2">
                         <div class="col-6">
@@ -139,7 +218,7 @@ async function getData() {
                         </div>
                     </div>
                 </div>`;
-        } else if (UIType === 'Airline') {
+        } else if (UIType === 'A') {
             details = `
                 <div class="col-sm-3 col-12 m-0 mb-2">
                     <img src="./assets/vip-hotel.jpg" class="w-100" alt="VIP Hotel">
@@ -184,7 +263,7 @@ async function getData() {
                         </div>
                     </div>
                 </div>`;
-        } else if (UIType === 'Rental') {
+        } else if (UIType === 'R') {
             details = `
                 <div class="col-sm-3 col-12 m-0 mb-2">
                     <img src="./assets/vip-hotel.jpg" class="w-100" alt="VIP Hotel">
@@ -193,11 +272,11 @@ async function getData() {
                     <div class="row mb-2">
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Car</p>
-                            <p>Kijang Innova</p>
+                            <p>${resultDetails.car_brand} ${resultDetails.car_name}</p>
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Day(s)</p>
-                            <p>${result.number_of_days}</p>
+                            <p>${calculateDays(resultDetails.pickupDate, resultDetails.returnDate)} Days</p>
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Is With Driver</p>
@@ -205,7 +284,7 @@ async function getData() {
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Price</p>
-                            <p>Rp. 15,000,000</p>
+                            <p>Rp. ${resultDetails.car_price}/Day</p>
                         </div>
                     </div>
                     <div class="row mb-2">
@@ -229,7 +308,7 @@ async function getData() {
                         </div>
                     </div>
                 </div>`;
-        } else {
+        } else if (UIType === 'T') {
             details = `
                 <div class="col-sm-3 col-12 m-0 mb-2">
                     <img src="./assets/vip-hotel.jpg" class="w-100" alt="VIP Hotel">
@@ -270,7 +349,31 @@ async function getData() {
         console.error('Error:', error);
     }
 
+
 }
+
+async function getReview(booking_id, booking_type){
+    try {
+        const response = await fetch(`http://localhost:8000/completed_bookings/${booking_type}`, {
+            method: 'GET',
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const result = await response.json();
+        console.log(result)
+        if (result.length === 0){
+            reviewButton.innerHTML = "Write a Review";
+        } else {
+            reviewButton.innerHTML = "Edit Review";
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+
 
 function formatCurrency(amount) {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
@@ -293,4 +396,10 @@ function convertDateToIndonesian(dateStr) {
 
 document.addEventListener('DOMContentLoaded', (event) => {
     getData();
+    const reviewButton = document.getElementById('review');
+    reviewButton.addEventListener('click', () => {
+        console.log("booking_id, booking_code");
+        
+        getReview(booking_id, booking_type);
+    });
 });

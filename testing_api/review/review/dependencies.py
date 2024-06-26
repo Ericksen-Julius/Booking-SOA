@@ -154,9 +154,9 @@ class DatabaseWrapper:
                 JOIN 
                     review_options ro ON ro.provider_type = b.booking_type
                 WHERE 
-                    b.user_id = %s 
-                    AND b.status = 'completed'
-                    AND r.id IS NULL;
+                    b.user_id = 1 
+                    AND b.status = 1
+                  ;
             """
             cursor.execute(sql, (user_id,))
             results = cursor.fetchall()
@@ -185,7 +185,7 @@ class Database(DependencyProvider):
                 pool_reset_session=True,
                 host='booking-mysql',
                 port="3306",
-                database='microservices_soa_h_2',
+                database='microservices_soa_h',
                 user='root',
                 password='password'
             )
