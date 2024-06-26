@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const weight = document.getElementById('weight')
     const travelInsuranceCheck = document.getElementById('travelInsuranceCheck')
     const service_url = ''
-    let insurancePrice = 0
+    let insurancePrice = 150000
     let asuransi_id = 0
     let ticketPrice = 0
     let totalPriceValue = 0
@@ -102,7 +102,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     ];
 
-    const result = flights.filter(flight => flight.flight_code === "QR 1456");
+    // let result = flights.filter(flight => flight.flight_code === "QR 1456");
+    let result
 
     travelInsuranceCheck.addEventListener('click', () => {
         asuransi_id = travelInsuranceCheck.checked ? 1 : 0;
@@ -117,23 +118,22 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 
     async function getFlightData() {
-        // try {
-        //     const response = await fetch(`http://52.200.174.164:8003/service/${service_id}`, {
-        //         method: 'GET',
-        //     });
+        try {
+            const response = await fetch(`'http://107.20.145.163:8003/airlines/airport_origin_location_code/-/airport_destination_location_code/-/minprice/-/maxprice/-/date/-/start_time/-/end_time/-/sort/-'`, {
+                method: 'GET',
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const result = await response.json()
+            provider_name.forEach(element => {
+                element.innerHTML = providerName
+            });
+            service_url = result.data.service_url
 
-        //     if (!response.ok) {
-        //         throw new Error(`HTTP error! Status: ${response.status}`);
-        //     }
-        //     const result = await response.json()
-        //     provider_name.forEach(element => {
-        //         element.innerHTML = result.data.provider_name
-        //     });
-        //     service_url = result.data.service_url
-
-        // } catch (error) {
-        //     console.error('Error:', error);
-        // }
+        } catch (error) {
+            console.error('Error:', error);
+        }
 
         try {
             const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
@@ -254,9 +254,18 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     }
 
+    function isDateInThePast(dateString) {
+        const inputDate = new Date(dateString);
+
+        const currentDate = new Date();
+
+        return inputDate < currentDate;
+    }
+
     async function coba() {
+        const user_id = localStorage.getItem('userID')
         const data = {
-            user_id: 1,
+            user_id: user_id,
             type: "Airline",
             total_price: totalPriceValue,
             provider_name: providerName,
@@ -282,9 +291,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 
     submitButton.addEventListener('click', function () {
-        console.log('check')
+        if (isDateInThePast(flight_date)) {
+            Swal.fire({
+                title: "Failed",
+                text: "Invalid date!",
+                icon: "error"
+            })
+            return
+        }
         coba()
     })
+    function isDateInThePast(dateString) {
+        const inputDate = new Date(dateString);
+
+        const currentDate = new Date();
+
+        return inputDate < currentDate;
+    }
 
 });
 

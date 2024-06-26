@@ -7,7 +7,7 @@ async function getData() {
     const provider = document.getElementById('provider_name');
     const total_price = document.getElementById('totalPrice');
 
-    
+
     if (!booking_code) {
         document.body.innerHTML = '<h1>Access Denied</h1>';
         return;
@@ -352,8 +352,10 @@ async function getData() {
 
 }
 
-async function getReview(booking_id, booking_type){
+async function getReview(booking_id, booking_type) {
     try {
+
+
         const response = await fetch(`http://localhost:8000/completed_bookings/${booking_type}`, {
             method: 'GET',
         });
@@ -363,10 +365,43 @@ async function getReview(booking_id, booking_type){
         }
         const result = await response.json();
         console.log(result)
-        if (result.length === 0){
+        if (result.length === 0) {
             reviewButton.innerHTML = "Write a Review";
         } else {
             reviewButton.innerHTML = "Edit Review";
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+async function postReview(booking_id, rating, comment) {
+    try {
+        const data = {
+            booking_id: booking_id,
+            rating: rating,
+            comment: comment,
+            option_id: []
+        };
+        const response = await fetch(`http://3.226.141.243:8004/review`, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const result = await response.json();
+        if (result.message == "Review added successfully") {
+            Swal.fire({
+                title: "Success",
+                text: "Berhasil memberikan review!",
+                icon: "success"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload();
+                }
+            });
         }
     } catch (error) {
         console.error('Error:', error);
@@ -395,7 +430,7 @@ function convertDateToIndonesian(dateStr) {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    // getData();
+    getData();
     const modal = document.getElementById('reviewModal');
     let valueStar = 0
     const comment = document.getElementById('comment');
@@ -414,7 +449,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
     });
     buttonSubmit.addEventListener('click', () => {
+        console.log(booking_id)
+        console.log(valueStar)
         console.log(comment.value)
+        postReview(booking_id, valueStar, comment.value)
     })
 
 });

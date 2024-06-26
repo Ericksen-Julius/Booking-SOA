@@ -60,18 +60,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function getRoomData() {
         try {
-            const response = await fetch(`http://107.20.145.163:8003/service/${service_id}`, {
+            const response = await fetch(`http://107.20.145.163:8003/hotel/${service_id}/people/-/room/-/minprice/1/maxprice/-`, {
                 method: 'GET',
             });
-
-
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const result = await response.json()
             console.log(result)
             provider_name.innerHTML = result.data.nama
-            providerName = result.data.nama
+            providerName = result.data.service_name
             service_url = result.data.url
             console.log(service_url)
             console.log("cek")
@@ -80,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
-            const urlReview = `http://localhost:8000/reviewRating/${providerName}`
+            const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
             const response = await fetch(urlReview, {
                 method: 'GET',
             });
@@ -289,9 +287,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     submitButton.addEventListener('click', function () {
+        if (isDateInThePast(check_in) || isDateInThePast(check_out)) {
+            Swal.fire({
+                title: "Failed",
+                text: "Invalid date!",
+                icon: "error"
+            })
+            return
+        }
         postBookingHotel()
     })
+    function isDateInThePast(dateString) {
+        const inputDate = new Date(dateString);
 
+        const currentDate = new Date();
+
+        return inputDate < currentDate;
+    }
     // getRoomData()
 
 });

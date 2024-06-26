@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
         try {
             const url = `${service_url}/car/${car_id}}`
-            const response = await fetch(`http://3.228.174.120:8005/car/${car_id}`, {
+            const response = await fetch(`http://3.228.174.120:8001/car/${car_id}`, {
                 method: 'GET',
             });
 
@@ -167,13 +167,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
             // console.log('Success:', result);
             console.log(result)
             car_image.src = result.image
-            seats.innerHTML = result.data.car_seats
-            luggages.innerHTML = result.data.car_seats
-            transmission.innerHTML = result.data.car_seats
-            year.innerHTML = result.data.car_seats
+            seats.innerHTML = `<i class="fa-solid fa-chair"></i> ${result.data.car_seats} seats`
+            luggages.innerHTML = `<i class="fa-solid fa-suitcase"></i> ${result.data.car_seats} luggages`
+            transmission.innerHTML = `<i class="fa-solid fa-cogs"></i> ${result.data.car_transmission}`
+            year.innerHTML = `<i class="fa-solid fa-certificate"></i> ${result.data.car_year}`
+            totalPriceValue = result.data.car_price
             // rental_price.innerHTML = `Rp. ${formatRupiah(result.data.car_price)}`
             for (let i = 0; i < rental_price.length; i++) {
-                rental_price[i].innerHTML = result.data.car_price
+                rental_price[i].innerHTML = `Rp. ${formatRupiah(result.data.car_price)}`
             }
             for (let i = 0; i < car_name.length; i++) {
                 car_name[i].innerHTML = result.data.car_name
@@ -181,12 +182,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
             image_wrapper.src = result.image
             total_price.innerHTML = `Rp. ${formatRupiah(result.data.car_price)}`
 
-            updateTotalPrice()
         } catch (error) {
             console.error('Error:', error);
         }
     }
     // getCarData()
+
+    function isDateInThePast(dateString) {
+        const inputDate = new Date(dateString);
+
+        const currentDate = new Date();
+
+        return inputDate < currentDate;
+    }
 
     async function postBookingRental() {
         if (pick_up_location.value == '' || return_location.value == '') {
@@ -199,16 +207,29 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     return
                 }
             })
+            return
+        }
+        if (isDateInThePast(pickup) | isDateInThePast(get_return_date)) {
+            Swal.fire({
+                title: "Failed",
+                text: "Invalid date!",
+                icon: "error"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    return
+                }
+            })
+            return
         }
         const user_id = localStorage.getItem('userID');
         const data = {
-            user_id: user_id,
+            user_id: parseInt(user_id),
             type: "Rental",
             total_price: totalPriceValue,
             provider_name: providerName,
-            car_id: car_id,
-            pick_up_date: pick_up_date,
-            return_date: return_date,
+            car_id: parseInt(car_id),
+            pick_up_date: pickup,
+            return_date: get_return_date,
             pick_up_location: pick_up_location.value,
             return_location: return_location.value,
             is_with_driver: is_with_driver,
@@ -227,17 +248,18 @@ document.addEventListener('DOMContentLoaded', (event) => {
             if (result1.status == 200) {
                 const url2 = `${service_url}/booking_add`
                 const data1 = {
-                    tanggal_mulai: pick_up_date,
-                    tanggal_selesai: return_date,
+                    tanggal_mulai: pickup,
+                    tanggal_selesai: get_return_date,
                     with_driver: is_with_driver,
                     total_harga: totalPriceValue,
-                    car_id: car_id
+                    car_id: parseInt(car_id)
                 };
-                const response2 = await fetch(url2, {
+                const response2 = await fetch(`http://3.228.174.120:8001/booking_add`, {
                     method: 'POST',
                     body: JSON.stringify(data1)
                 });
-
+                const result = await response2.json()
+                console.log(result)
                 if (!response2.ok) {
                     throw new Error(`HTTP error! Status: ${response2.status}`);
                 } else {
@@ -247,7 +269,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         icon: "success"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = `http://3.226.141.243:8004/paymentRental.php?booking_code=${result1.booking_code}&booking_id=${result1.booking_id}`;
+                            // window.location.href = `http://3.226.141.243:8004/paymentRental.php?booking_code=${result1.booking_code}&booking_id=${result1.booking_id}`;
                         }
                     });
                 }
