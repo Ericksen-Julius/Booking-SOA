@@ -59,7 +59,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         // }
 
         try {
-            const response = await fetch(`http://localhost:8000/reviewRating/${providerName}`, {
+            const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
+            const response = await fetch(urlReview, {
                 method: 'GET',
             });
 

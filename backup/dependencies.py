@@ -63,19 +63,20 @@ class DatabaseWrapper:
         cursor.close()
         return result
     
-    def get_booking_details(self, booking_id):    
+    def get_booking_details(self, booking_code):    
         try:    
             cursor = self.connection.cursor(dictionary=True)
-            sql = "SELECT booking_type FROM bookings WHERE id = %s"
-            cursor.execute(sql,(booking_id,))
+            sql = "SELECT booking_type FROM bookings WHERE booking_code = %s"
+            cursor.execute(sql,(booking_code,))
             result = cursor.fetchone()
             if (result and result['booking_type'] == "Hotel"):
                 sql = """
                 SELECT 
                     a.service_id,
-                    b.room_type,
                     a.provider_name,
                     a.booking_code,
+                    CAST(a.total_price AS INT) AS total_price,
+                    b.room_type,
                     b.check_in_date,
                     b.check_out_date,
                     b.number_of_rooms,
@@ -87,9 +88,9 @@ class DatabaseWrapper:
                 ON 
                     a.id = b.booking_id 
                 WHERE 
-                    a.id = %s;
+                    a.booking_code = %s;
                 """
-                cursor.execute(sql,(booking_id,))
+                cursor.execute(sql,(booking_code,))
                 bookings = cursor.fetchone()
                 if bookings:
                     if isinstance(bookings['check_in_date'], date):
@@ -102,6 +103,7 @@ class DatabaseWrapper:
                     a.service_id,
                     a.booking_code,
                     a.provider_name,
+                    CAST(a.total_price AS INT) AS total_price,
                     a.asuransi_id,
                     b.flight_id,
                     b.flight_date
@@ -112,9 +114,9 @@ class DatabaseWrapper:
                 ON 
                     a.id = b.booking_id 
                 WHERE 
-                    a.id = %s;
+                    a.booking_code = %s;
                 """
-                cursor.execute(sql,(booking_id,))
+                cursor.execute(sql,(booking_code,))
                 bookings = cursor.fetchone()
                 if bookings:
                     if isinstance(bookings['flight_date'], date):
@@ -125,6 +127,7 @@ class DatabaseWrapper:
                     a.service_id,
                     a.booking_code,
                     a.provider_name,
+                    CAST(a.total_price AS INT) AS total_price,
                     a.asuransi_id,
                     b.pickup_date,
                     b.return_date,
@@ -139,9 +142,9 @@ class DatabaseWrapper:
                 ON 
                     a.id = b.booking_id 
                 WHERE 
-                    a.id = %s;
+                    a.booking_code = %s;
                 """
-                cursor.execute(sql,(booking_id,))
+                cursor.execute(sql,(booking_code,))
                 bookings = cursor.fetchone()
                 if bookings:
                     if isinstance(bookings['pickup_date'], date):
@@ -154,6 +157,7 @@ class DatabaseWrapper:
                     a.service_id,
                     a.booking_code,
                     a.provider_name,
+                    CAST(a.total_price AS INT) AS total_price,
                     b.visit_date,
                     b.paket_attraction_id
                 FROM 
@@ -163,9 +167,9 @@ class DatabaseWrapper:
                 ON 
                     a.id = b.booking_id 
                 WHERE 
-                    a.id = %s;
+                    a.booking_code = %s;
                 """
-                cursor.execute(sql,(booking_id,))
+                cursor.execute(sql,(booking_code,))
                 bookings = cursor.fetchone()
                 if bookings:
                     if isinstance(bookings['visit_date'], date):
@@ -259,7 +263,6 @@ class DatabaseWrapper:
                 sql = "INSERT INTO `booking_attractions`(`booking_id`, `paket_attraction_id`, `visit_date`, `number_of_tickets`) VALUES (%s, %s, %s, %s)"
                 cursor.execute(sql, (result['new_inserted_id'],paket_attraction_id,visit_date,number_of_tickets))
                 self.connection.commit()
-                inserted_id = cursor.lastrowid
                 data = {}
                 data['type'] = type
                 data['provider_name'] = provider_name

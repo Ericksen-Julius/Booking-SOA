@@ -19,7 +19,7 @@ class ReviewService:
     @rpc
     def get_information_provider(self,provider_name):
         response = self.database.get_information_provider(provider_name=provider_name)
-        return response
+        return response 
     @rpc
     def get_rating_provider(self,provider_name):
         response = self.database.get_rating_provider(provider_name=provider_name)

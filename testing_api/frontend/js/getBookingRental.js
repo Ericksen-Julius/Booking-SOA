@@ -26,12 +26,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let asuransi_id = 0
     const service_url = ''
     const submitButton = document.getElementById('book')
-    const carInsurance = document.getElementById('insuranceCheckBox1')
+    const carInsurance = document.getElementById('insuranceCheckbox1')
 
     let providerName = 'Yanto Car'
     let totalPriceValue = 0
     let insurance_price = 0
-    let province = 'Malang'
     let pricelist
 
     console.log(service_id)
@@ -94,19 +93,24 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const result = await response.json()
-            pricelist = result.filter(insurance => insurance.provinsi === province);
+            console.log(result)
+            pricelist = result.filter(insurance => insurance.id_car === car_id);
             const keys = Object.keys(pricelist);
 
-            for (let i = 4; i < keys.length; i++) {
+            for (let i = 5; i < keys.length; i++) {
                 const [min, max] = keys[i].split('-').map(Number);
                 if (dayRental >= min && dayRental <= max) {
                     insurance_price = pricelist[keys[i]]
+                    break
                 }
             }
+            console.log(insurance_price)
         } catch (error) {
             console.error('Error:', error);
         }
     }
+
+    getInsurancePrice()
 
 
     async function getCarData() {
@@ -126,7 +130,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8000/reviewRating/${providerName}`, {
+            const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
+            const response = await fetch(urlReview, {
                 method: 'GET',
             });
 

@@ -58,66 +58,67 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    // async function getRoomData() {
-    //     try {
-    //         const response = await fetch(`http://52.200.174.164:8003/service/${service_id}`, {
-    //             method: 'GET',
-    //         });
+    async function getRoomData() {
+        try {
+            const response = await fetch(`http://52.200.174.164:8003/service/${service_id}`, {
+                method: 'GET',
+            });
 
-    //         if (!response.ok) {
-    //             throw new Error(`HTTP error! Status: ${response.status}`);
-    //         }
-    //         const result = await response.json()
-    //         provider_name.innerHTML = result.data.provider_name
-    //          providerName = result.data.provider_name
-    //         service_url = result.data.service_url
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const result = await response.json()
+            provider_name.innerHTML = result.data.provider_name
+            providerName = result.data.provider_name
+            service_url = result.data.service_url
 
-    //     } catch (error) {
-    //         console.error('Error:', error);
-    //     }
+        } catch (error) {
+            console.error('Error:', error);
+        }
 
-    //     try {
-    //         const response = await fetch(`http://localhost:8000/reviewRating/${providerName}`, {
-    //             method: 'GET',
-    //         });
+        try {
+            const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
+            const response = await fetch(urlReview, {
+                method: 'GET',
+            });
 
-    //         if (!response.ok) {
-    //             throw new Error(`HTTP error! Status: ${response.status}`);
-    //         }
-    //         const result = await response.json()
-    //         console.log(result)
-    // rating.innerHTML = `${result.average_rating}/5 <span
-    //                     class="text-dark">(${result.total_reviewers})</span>`
-    //     } catch (error) {
-    //         console.error('Error:', error);
-    //     }
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const result = await response.json()
+            console.log(result)
+            rating.innerHTML = `${result.average_rating}/5 <span
+                        class="text-dark">(${result.total_reviewers})</span>`
+        } catch (error) {
+            console.error('Error:', error);
+        }
 
-    //     try {
-    //         const url = `${service_url}/hotel/room_type/${room_id}`
-    //         const response = await fetch(`http://52.200.174.164:8003/hotel/room_type/1`, {
-    //             method: 'GET',
-    //         });
+        try {
+            const url = `${service_url}/hotel/room_type/${room_id}`
+            const response = await fetch(`http://52.200.174.164:8003/hotel/room_type/1`, {
+                method: 'GET',
+            });
 
-    //         if (!response.ok) {
-    //             throw new Error(`HTTP error! Status: ${response.status}`);
-    //         }
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
 
-    //         const result = await response.json();
-    //         // console.log('Success:', result);
-    //         console.log(result)
-    //         room_price.innerHTML = `Rp. ${formatRupiah(result.price)}`
-    //         room_type.innerHTML = result.type
-    //         roomPriceValue = result.price
-    //         provider_name.innerHTML = providerName
-    //         image_wrapper.src = result.image
-    //         room_price_1.innerHTML = `Rp. ${formatRupiah(result.price)}`
-    //         count.innerHTML = `(${counterValue}x)`
+            const result = await response.json();
+            // console.log('Success:', result);
+            console.log(result)
+            room_price.innerHTML = `Rp. ${formatRupiah(result.price)}`
+            room_type.innerHTML = result.type
+            roomPriceValue = result.price
+            provider_name.innerHTML = providerName
+            image_wrapper.src = result.image
+            room_price_1.innerHTML = `Rp. ${formatRupiah(result.price)}`
+            count.innerHTML = `(${counterValue}x)`
 
-    //         updateTotalPrice()
-    //     } catch (error) {
-    //         console.error('Error:', error);
-    //     }
-    // }
+            updateTotalPrice()
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
     const counterElement = document.getElementById('counter');
     const decreaseButton = document.getElementById('decrease');
     const increaseButton = document.getElementById('increase');
@@ -157,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
             number_of_rooms: counterValue
         };
         try {
-            const url = `${service_url}/hotel/room_type/${check_in}&${check_out}`
+            const url = `http://3.215.46.161:8013/hotel/room_type/"${check_in}"&"${check_out}"`
             const response = await fetch(url, {
                 method: 'GET'
             });
@@ -168,8 +169,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const result = await response.json()
             result = result.filter(room => room.id === room_id);
+            console.log(result)
             if (result.total_room >= number_of_rooms) {
-                const urlPost = `http://3.226.141.243:8004/booking`
+                const urlPost = `http://localhost:8000/booking`
                 const response1 = await fetch(urlPost, {
                     method: 'POST',
                     body: JSON.stringify(data)
@@ -180,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 const result1 = await response1.json();
+                console.log(result1)
                 if (result1.status == 200) {
                     const url2 = `${service_url}/hotel/reservation`
                     const data1 = {
@@ -193,6 +196,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         method: 'POST',
                         body: JSON.stringify(data1)
                     });
+
+                    console.log(response2.status)
 
                     if (!response2.ok) {
                         throw new Error(`HTTP error! Status: ${response2.status}`);

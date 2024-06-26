@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const capacity = document.getElementById('capacity')
     const submitButton = document.getElementById('book')
     const weight = document.getElementById('weight')
+    const travelInsuranceCheck = document.getElementById('travelInsuranceCheck')
     const service_url = ''
     let insurancePrice = 0
     let asuransi_id = 0
@@ -102,7 +103,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     const result = flights.filter(flight => flight.flight_code === "QR 1456");
 
+    travelInsuranceCheck.addEventListener('click', () => {
+        asuransi_id = travelInsuranceCheck.checked ? 1 : 0;
 
+        if (asuransi_id == 1) {
+            totalPriceValue += insurance_price
+        } else {
+            totalPriceValue -= insurance_price
+        }
+        total_price.innerHTML = `Rp. ${formatRupiah(totalPriceValue)}`
+        // You can now use the `checkboxState` variable as needed
+    });
 
     async function getFlightData() {
         // try {
@@ -124,7 +135,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         // }
 
         try {
-            const response = await fetch(`http://localhost:8000/reviewRating/${providerName}`, {
+            const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
+            const response = await fetch(urlReview, {
                 method: 'GET',
             });
 
@@ -141,7 +153,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         console.log(result[0])
         ticket_price.innerHTML = `Rp. ${formatRupiah(result[0].price)}`
         insurance_price.innerHTML = `Rp. ${formatRupiah(insurancePrice)}`
-        total_price.innerHTML = `Rp. ${formatRupiah(result[0].price + insurancePrice)}`
+        total_price.innerHTML = `Rp. ${formatRupiah(result[0].price)}`
         for (let i = 0; i < origin.length; i++) {
             origin[i].innerHTML = result[0].airport_origin_city_name
         }

@@ -19,8 +19,8 @@ class BookingService:
         bookings = self.database.get_booking_by_id(user_id = user_id)
         return bookings
     @rpc
-    def get_booking_details(self, booking_id):
-        bookings = self.database.get_booking_details(booking_id = booking_id)
+    def get_booking_details(self, booking_code):
+        bookings = self.database.get_booking_details(booking_code = booking_code)
         return bookings
     
     @rpc
