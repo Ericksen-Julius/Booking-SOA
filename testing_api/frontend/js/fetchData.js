@@ -452,7 +452,7 @@ async function getData() {
         document.getElementById('infoContainer').innerHTML = info;
         document.getElementById('bookContainer').innerHTML = book;
         document.getElementById('recipientContainer').innerHTML = recipient;
-
+        getReview(booking_type);
     } catch (error) {
         console.error('Error:', error);
     }
@@ -460,15 +460,16 @@ async function getData() {
 
 }
 
-async function getReview(booking_id, booking_type){
+async function getReview(booking_type){
     try {
-        const response = await fetch(`http://localhost:8000/completed_bookings/${booking_type}`, {
+        const response = await fetch(`http://localhost:8000/get_review_options/${booking_type}`, {
             method: 'GET',
         });
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        const reviewButton = document.getElementById('review')
         const result = await response.json();
         console.log(result)
         if (result.length === 0){

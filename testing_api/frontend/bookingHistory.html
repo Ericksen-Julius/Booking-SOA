@@ -242,8 +242,14 @@
     <script src="./js/fetchData.js"></script>
 
     <script>
+        document.getElementById('review').addEventListener('click', function () {
+            document.getElementById('staticBackdropLabel').innerText = `Review for ${providerName}`;
+
+        });
+
         document.addEventListener('DOMContentLoaded', (event) => {
-            getData(); // Call getData function when the DOM is fully loaded
+            let x = getData(); // Call getData function when the DOM is fully loaded
+            console.log("XXXXX",x)
         });
 
     </script>
