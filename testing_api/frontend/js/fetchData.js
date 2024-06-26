@@ -7,7 +7,7 @@ async function getData() {
     const provider = document.getElementById('provider_name');
     const total_price = document.getElementById('totalPrice');
 
-
+    console.log(booking_code)
     if (!booking_code) {
         document.body.innerHTML = '<h1>Access Denied</h1>';
         return;
@@ -22,14 +22,16 @@ async function getData() {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         var result = await response.json();
-        result = result['booking details']
+
+        result = result['booking details'] // Main Booking Table
+        console.log("RESULTTT",result)
+
         booking_id = result.id;
         booking_type = result.booking_type;
         console.log("result", booking_id);
         var url = '';
-        let providerDetails;
-        let resultDetails;
-        console.log(result.booking_code)
+        let providerDetails = {};                // Provider Details Table
+        let resultDetails = {};                  // Booking Details Table
 
         if (result.booking_code.charAt(0) === "H") {
             try {
@@ -40,8 +42,19 @@ async function getData() {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                providerDetails = await response.json();
-                console.log("PROVIDER", providerDetails);
+                let api_response = await response.json();
+                console.log("PROVIDER", api_response);
+                providerDetails['nama'] = api_response['name']
+                providerDetails['alamat'] = api_response['address']
+                providerDetails['kota'] = api_response['city']
+                providerDetails['negara'] = api_response['country']
+
+                if (api_response['image'] != null && typeof api_response['image'] === 'object' 
+                    && api_response['image']['error'] === "No AWS credentials were provided.") {
+                    providerDetails['image'] = "./assets/hotel.jpeg"; // Default value
+                } else {
+                    providerDetails['image'] = api_response['image'] || "./assets/hotel.jpeg"; // Use API image if available, otherwise default
+                }
             } catch (error) {
                 console.error('Error:', error);
             }
@@ -54,30 +67,41 @@ async function getData() {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 resultDetails = await response.json();
-
                 console.log("RESULTDETAIL", resultDetails);
+
             } catch (error) {
                 console.error('Error:', error);
             }
         } else if (result.booking_code.charAt(0) == "A") {
-            //AIrline
-        } else if (result.booking_code.charAt(0) == "R") {
-            // Rental
+            //Airline
             try {
                 // Nanti ganti url api rental
-                const response = await fetch(`http://3.215.46.161:8011/hotel`, {
+                const response = await fetch(`http://3.228.174.120:8001/provider`, {
                     method: 'GET',
                 });
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                console.log(providerDetails);
+                let api_response = await response.json();
+                api_response = api_response[0];
+
+                console.log("PROVIDER", api_response);
+                providerDetails['nama'] = api_response['provider_name']
+                providerDetails['alamat'] = api_response['provider_address']
+                providerDetails['kota'] = api_response['provider_city']
+                providerDetails['negara'] = api_response['provider_country']
+
+                if (api_response['map'] != null && typeof api_response['map'] === 'object') {
+                    providerDetails['image'] = "./assets/hotel.jpeg"; // Default value
+                } else {
+                    providerDetails['image'] = api_response['map'] || "./assets/hotel.jpeg"; // Use API image if available, otherwise default
+                }
             } catch (error) {
                 console.error('Error:', error);
             }
             try {
-                const response = await fetch(`${url}/car/room_type/${result.car_id}`, {
+                const response = await fetch(`http://3.228.174.120:8001/car/${result.car_id}`, {
                     method: 'GET',
                 });
 
@@ -85,16 +109,101 @@ async function getData() {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 resultDetails = await response.json();
-                console.log(providerDetails);
+                console.log("resultDetails", resultDetails);
+
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        } else if (result.booking_code.charAt(0) == "R") {
+            // Rental
+            try {
+                // Nanti ganti url api rental
+                const response = await fetch(`http://3.228.174.120:8001/provider`, {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                let api_response = await response.json();
+                api_response = api_response[0];
+
+                console.log("PROVIDER", api_response);
+                providerDetails['nama'] = api_response['provider_name']
+                providerDetails['alamat'] = api_response['provider_address']
+                providerDetails['kota'] = api_response['provider_city']
+                providerDetails['negara'] = api_response['provider_country']
+
+                if (api_response['map'] != null && typeof api_response['map'] === 'object') {
+                    providerDetails['map'] = ""; // Default value
+                } else {
+                    providerDetails['map'] = api_response['map'] || ""; // Use API image if available, otherwise default
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+            try {
+                const response = await fetch(`http://3.228.174.120:8001/car/${result.car_id}`, {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                resultDetails = await response.json();
+                console.log("resultDetails", resultDetails);
+                providerDetails['image'] = resultDetails['image'] || "";
             } catch (error) {
                 console.error('Error:', error);
             }
         } else if (result.booking_code.charAt(0) == "T") {
             // Attraction
+            try {
+                // Nanti ganti url api rental
+                const response = await fetch(`http://3.217.250.166:8003/api/atraksi`, {
+                    method: 'GET',
+                });
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                let api_response = await response.json();
+                console.log("PROVIDER", api_response);
+                providerDetails['nama'] = api_response['title']
+                providerDetails['alamat'] = api_response['alamat']
+                providerDetails['kota'] = api_response['kota_name']
+                providerDetails['negara'] = api_response['provinsi_name']
+
+                if (api_response['photo'] != null && typeof api_response['photo'] === 'object'
+                    && api_response['photo']['error'] === "No AWS credentials were provided.") {
+
+                    providerDetails['image'] = "./assets/hotel.jpeg"; // Default value
+                } else {
+                    const imageUrl = api_response['photo'][0].image;
+                    // Use the extracted image URL
+                    providerDetails['image'] = imageUrl || "./assets/hotel.jpeg"; // Use API image if available, otherwise default
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+            try {
+                const response = await fetch(`http://3.217.250.166:8003/api/atraksi/paket/${result.paket_attraction_id}`, {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                resultDetails = await response.json();
+                console.log("RESULTDETAIL",resultDetails);
+            } catch (error) {
+                console.error('Error:', error);
+            }
         } else {
             return "Error Booking code not valid", 400;
         }
+
+// ######################################################################################################### //
 
         provider.innerHTML = result.provider_name;
         total_price.innerHTML = formatCurrency(result.total_price);
@@ -105,7 +214,7 @@ async function getData() {
             <img src="./assets/hotel.jpeg" alt="" class="w-100 mb-3">
                     <div class="row mb-2">
                         <div class="col-7">
-                            ${providerDetails.provider_name}
+                            ${providerDetails.nama}
                         </div>
                         <div class="col-1"></div>
                         <div class="col-4 text-primary fw-bolder text-end">
@@ -114,17 +223,17 @@ async function getData() {
                     </div>
                     <div class="row mb-2">
                         <div class="col-12">
-                            ${providerDetails.provider_address}
+                            ${providerDetails.alamat}
                         </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-12">
-                            ${providerDetails.provider_city}
+                            ${providerDetails.kota}
                         </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-12">
-                            ${providerDetails.provider_country}
+                            ${providerDetails.negara}
                         </div>
                     </div>
                     <hr style="border: none; border-top: 2px solid #0d6efd;">
@@ -155,7 +264,6 @@ async function getData() {
                         </div>
                     </div>
                 `;
-
         let book = `
             <div class="row mb-2">
                 <div class="col-6 text-center">
@@ -185,7 +293,7 @@ async function getData() {
         if (UIType === 'H') {
             details = `
                 <div class="col-sm-3 col-12 m-0 mb-2">
-                    <img src="./assets/vip-hotel.jpg" class="w-100" alt="VIP Hotel">
+                    <img src="${providerDetails.image}" class="w-100" alt="VIP Hotel">
                 </div>
                 <div class="col-sm-9 col-12">
                     <div class="row mb-2">
@@ -221,7 +329,7 @@ async function getData() {
         } else if (UIType === 'A') {
             details = `
                 <div class="col-sm-3 col-12 m-0 mb-2">
-                    <img src="./assets/vip-hotel.jpg" class="w-100" alt="VIP Hotel">
+                    <img src="${providerDetails.image}" class="w-100" alt="VIP Hotel">
                 </div>
                 <div class="col-sm-9 col-12">
                     <div class="row mb-2">
@@ -266,7 +374,7 @@ async function getData() {
         } else if (UIType === 'R') {
             details = `
                 <div class="col-sm-3 col-12 m-0 mb-2">
-                    <img src="./assets/vip-hotel.jpg" class="w-100" alt="VIP Hotel">
+                    <img src="${providerDetails.image}" class="w-100" alt="VIP Hotel">
                 </div>
                 <div class="col-sm-9 col-12">
                     <div class="row mb-2">
@@ -276,7 +384,7 @@ async function getData() {
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Day(s)</p>
-                            <p>${calculateDays(resultDetails.pickupDate, resultDetails.returnDate)} Days</p>
+                            <p>${calculateDays(result.pickupDate, result.returnDate)} Days</p>
                         </div>
                         <div class="col-3">
                             <p class="fw-bolder mb-2">Is With Driver</p>
@@ -311,7 +419,7 @@ async function getData() {
         } else if (UIType === 'T') {
             details = `
                 <div class="col-sm-3 col-12 m-0 mb-2">
-                    <img src="./assets/vip-hotel.jpg" class="w-100" alt="VIP Hotel">
+                    <img src="${providerDetails.image}" class="w-100" alt="VIP Hotel">
                 </div>
                 <div class="col-sm-9 col-12">
                     <div class="row mb-2">
@@ -321,7 +429,7 @@ async function getData() {
                         </div>
                         <div class="col-4">
                             <p class="fw-bolder mb-2">Quantity</p>
-                            <p>${result.number_of_tickets}</p>
+                            <p>1</p>
                         </div>
                         <div class="col-4">
                             <p class="fw-bolder mb-2">Price</p>
@@ -352,10 +460,8 @@ async function getData() {
 
 }
 
-async function getReview(booking_id, booking_type) {
+async function getReview(booking_id, booking_type){
     try {
-
-
         const response = await fetch(`http://localhost:8000/completed_bookings/${booking_type}`, {
             method: 'GET',
         });
@@ -365,7 +471,7 @@ async function getReview(booking_id, booking_type) {
         }
         const result = await response.json();
         console.log(result)
-        if (result.length === 0) {
+        if (result.length === 0){
             reviewButton.innerHTML = "Write a Review";
         } else {
             reviewButton.innerHTML = "Edit Review";
@@ -444,6 +550,22 @@ function convertDateToIndonesian(dateStr) {
 
     return formattedDate;
 }
+function calculateDays(startDateStr, endDateStr) {
+    // Parse the input date strings into Date objects
+    let startDate = new Date(startDateStr);
+    let endDate = new Date(endDateStr);
+
+    // Calculate the difference in milliseconds
+    let timeDifference = endDate.getTime() - startDate.getTime();
+
+    // Convert milliseconds to days
+    let daysDifference = timeDifference / (1000 * 3600 * 24);
+
+    // Round down to get the whole number of days
+    daysDifference = Math.floor(daysDifference);
+
+    return daysDifference;
+}
 
 document.addEventListener('DOMContentLoaded', (event) => {
     getData();
@@ -466,10 +588,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
     });
     buttonSubmit.addEventListener('click', () => {
-        console.log(booking_id)
-        console.log(valueStar)
         console.log(comment.value)
-        postReview(booking_id, valueStar, comment.value)
     })
 
 });
