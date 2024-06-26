@@ -166,6 +166,17 @@ class GatewayService(object):
         except Exception as e:
             error_message = str(e)
             return 500, json.dumps({'error': error_message})
+    @http('GET', '/getDate/<int:booking_id>/<string:booking_type>')
+    def get_review_date(self, request, booking_id, booking_type):
+        try:
+            result = self.review_rpc.get_review_date(booking_id=booking_id,booking_type=booking_type)
+            if result['status'] == 200:
+                return 200, self.header, json.dumps(result)
+            else:
+                return result['status'],json.dumps({'error': result.get('error', 'Unknown error')})
+        except Exception as e:
+            error_message = str(e)
+            return 500, json.dumps({'error': error_message})
 
     # @http('GET', '/review/booking/<int:booking_id>')
     # def get_reviews_by_booking(self, request, booking_id):

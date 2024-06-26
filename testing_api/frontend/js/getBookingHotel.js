@@ -27,6 +27,10 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log(check_out)
     console.log(service_id)
     console.log(room_id)
+    if (!room_id || !check_in || !check_out || !service_id) {
+        document.body.innerHTML = '<h1>Access Denied</h1>';
+        return;
+    }
 
 
     const dateObjectCheckIn = new Date(check_in);
@@ -68,9 +72,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             const result = await response.json()
             console.log(result)
-            provider_name.innerHTML = result.data.nama
+            provider_name.innerHTML = result.data.service_name
             providerName = result.data.service_name
-            service_url = result.data.url
+            service_url = result.data.hotel_url
             console.log(service_url)
             console.log("cek")
         } catch (error) {
@@ -304,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return inputDate < currentDate;
     }
-    // getRoomData()
+    getRoomData()
 
 });
 localStorage.setItem('userID', 1);

@@ -33,3 +33,7 @@ class ReviewService:
     def get_review_comment(self, provider_name):
         response = self.database.get_review_comment(provider_name=provider_name)
         return response
+    @rpc
+    def get_review_date(self, booking_id, booking_type):
+        response = self.database.get_review_date(booking_id=booking_id,booking_type=booking_type)
+        return response

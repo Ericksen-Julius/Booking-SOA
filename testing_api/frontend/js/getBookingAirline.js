@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const submitButton = document.getElementById('book')
     const weight = document.getElementById('weight')
     const travelInsuranceCheck = document.getElementById('travelInsuranceCheck')
-    const service_url = ''
+    let service_url = ''
     let insurancePrice = 150000
     let asuransi_id = 0
     let ticketPrice = 0
@@ -34,6 +34,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     console.log(service_id)
     console.log(flight_date)
     console.log(flight_code)
+    if (!service_id || !flight_date || !flight_code) {
+        document.body.innerHTML = '<h1>Access Denied</h1>';
+        return;
+    }
 
 
     const dateObjectDeparture = new Date(flight_date);
@@ -109,9 +113,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
         asuransi_id = travelInsuranceCheck.checked ? 1 : 0;
 
         if (asuransi_id == 1) {
-            totalPriceValue += insurance_price
+            totalPriceValue += insurancePrice
+            insurance_price.innerHTML = `Rp. ${formatRupiah(insurancePrice)}`
         } else {
-            totalPriceValue -= insurance_price
+            totalPriceValue -= insurancePrice
+            insurance_price.innerHTML = `Rp. 0`
         }
         total_price.innerHTML = `Rp. ${formatRupiah(totalPriceValue)}`
         // You can now use the `checkboxState` variable as needed
@@ -119,40 +125,21 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     async function getFlightData() {
         try {
-            const response = await fetch(`'http://107.20.145.163:8003/airlines/airport_origin_location_code/-/airport_destination_location_code/-/minprice/-/maxprice/-/date/-/start_time/-/end_time/-/sort/-'`, {
+            const response = await fetch(`http://107.20.145.163:8003/airlines/airport_origin_location_code/-/airport_destination_location_code/-/minprice/-/maxprice/-/date/-/start_time/-/end_time/-/sort/-`, {
                 method: 'GET',
             });
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            const result = await response.json()
-            provider_name.forEach(element => {
-                element.innerHTML = providerName
-            });
-            service_url = result.data.service_url
+            const resultAirline = await response.json()
+            result = resultAirline.filter(flight => flight.code == flight_code)
 
-        } catch (error) {
-            console.error('Error:', error);
-        }
-
-        try {
-            const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
-            const response = await fetch(urlReview, {
-                method: 'GET',
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const result = await response.json()
-            console.log(result)
-            rating.innerHTML = `${result.average_rating}/5 <span
-                        class="text-dark">(${result.total_reviewers})</span>`
         } catch (error) {
             console.error('Error:', error);
         }
         console.log(result[0])
         ticket_price.innerHTML = `Rp. ${formatRupiah(result[0].price)}`
+        ticketPrice = result[0].price
         insurance_price.innerHTML = `Rp. ${formatRupiah(insurancePrice)}`
         total_price.innerHTML = `Rp. ${formatRupiah(result[0].price)}`
         for (let i = 0; i < origin.length; i++) {
@@ -169,6 +156,42 @@ document.addEventListener('DOMContentLoaded', (event) => {
         capacity.innerHTML = result[0].capacity
         weight.innerHTML = result[0].weight
         totalPriceValue += result[0].price
+
+        try {
+            const response = await fetch(`http://107.20.145.163:8003/airline/${service_id}/attractioname/-/minprice/-/maxprice/-`, {
+                method: 'GET',
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const result = await response.json()
+            for (let i = 0; i < provider_name.length; i++) {
+                provider_name[i].innerHTML = result.data.service_name
+            }
+            providerName = result.data.service_name
+            service_url = result.data.airline_url
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+
+        try {
+            const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
+            const response = await fetch(urlReview, {
+                method: 'GET',
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const resultRating = await response.json()
+            console.log(resultRating)
+            rating.innerHTML = `${resultRating.average_rating}/5 <span
+                        class="text-dark">(${resultRating.total_reviewers})</span>`
+        } catch (error) {
+            console.error('Error:', error);
+        }
+
 
         // try {
         //     const url = `${service_url}/hotel/room_type/${room_id}`
@@ -206,7 +229,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             type: "Airline",
             total_price: totalPriceValue,
             provider_name: providerName,
-            asuransi_id: asuransi_id == -1 ? null : asuransi_id,
+            asuransi_id: asuransi_id,
             flight_id: flight_code,
             flight_date: flight_date,
             service_id: service_id
@@ -299,7 +322,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             })
             return
         }
-        coba()
+        postBookingAirline()
     })
     function isDateInThePast(dateString) {
         const inputDate = new Date(dateString);

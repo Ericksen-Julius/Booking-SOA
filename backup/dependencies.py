@@ -499,6 +499,45 @@ class DatabaseWrapper:
             return {'success': True}
         except Exception as e:
             return {'error': str(e), 'success': False}
+        
+
+    def get_review_date(self, booking_id, booking_type):
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            result = {}
+            # result['date'] = booking_id
+            if booking_type == 'Hotel':
+                sql = 'SELECT check_out_date FROM booking_hotels WHERE booking_id = %s'
+            elif booking_type == 'Airline':
+                sql = 'SELECT flight_date FROM booking_airlines WHERE booking_id = %s'
+            elif booking_type == 'Attraction':
+                sql = 'SELECT visit_date FROM booking_attractions WHERE booking_id = %s'
+            else:
+                sql = 'SELECT return_date FROM booking_rentals WHERE booking_id = %s'
+            
+            cursor.execute(sql, (booking_id,))
+            resultDate = cursor.fetchone()
+            if booking_type == 'Hotel':
+                result['date'] = resultDate['check_out_date'].isoformat()
+            elif booking_type == 'Airline':
+                result['date'] = resultDate['flight_date'].isoformat()
+            elif booking_type == 'Attraction':
+                result['date'] = resultDate['visit_date'].isoformat()
+            else:
+                result['date'] = resultDate['return_date'].isoformat()
+
+            
+            sql = "SELECT * FROM reviews WHERE booking_id = %s"
+            cursor.execute(sql, (booking_id,))
+            result2 = cursor.fetchone()
+            cursor.close()
+            result['reviewed'] = True if result2 is not None else False
+            
+            return {'data': result, 'status': 200}
+            
+        except Exception as e:
+            return {'error': str(e), 'success': False}
+
 
     # def get_reviews_by_booking(self, booking_id):
     #     try:

@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const return_location = document.getElementById('return');
     const is_with_driver = 0
     let asuransi_id = 0
-    const service_url = ''
+    let service_url = ''
     const submitButton = document.getElementById('book')
     const carInsurance = document.getElementById('insuranceCheckbox1')
 
@@ -38,6 +38,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
     console.log(pickup)
     console.log(get_return_date)
     console.log(car_id)
+
+    if (!car_id || !service_id || !pickup || !get_return_date) {
+        document.body.innerHTML = '<h1>Access Denied</h1>';
+        return;
+    }
 
 
     const dateObjectCheckIn = new Date(pickup);
@@ -121,24 +126,25 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     async function getCarData() {
         console.log("check")
-        // try {
-        //     const response = await fetch(`http://52.200.174.164:8003/service/${service_id}`, {
-        //         method: 'GET',
-        //     });
+        try {
+            const response = await fetch(`http://107.20.145.163:8003/carrental/service/${service_id}/pickup/-/returncar/-/car_id/-`, {
+                method: 'GET',
+            });
 
-        //     if (!response.ok) {
-        //         throw new Error(`HTTP error! Status: ${response.status}`);
-        //     }
-        //     const result = await response.json()
-        //     provider_name.innerHTML = result.data.provider_name
-        //     service_url = result.data.service_url
-        // } catch (error) {
-        //     console.error('Error:', error);
-        // }
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const result = await response.json()
+            provider_name.innerHTML = result.data.service_name
+            providerName = result.data.service_name
+            service_url = result.data.url
+        } catch (error) {
+            console.error('Error:', error);
+        }
 
         try {
             const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
-            const response = await fetch(`http://localhost:8000/reviewRating/${providerName}`, {
+            const response = await fetch(urlReview, {
                 method: 'GET',
             });
 
@@ -155,7 +161,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
         try {
             const url = `${service_url}/car/${car_id}}`
-            const response = await fetch(`http://3.228.174.120:8001/car/${car_id}`, {
+            const response = await fetch(url, {
                 method: 'GET',
             });
 

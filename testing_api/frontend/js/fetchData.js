@@ -1,4 +1,4 @@
-let booking_id = 0;
+let booking_id
 let booking_type
 
 async function getData() {
@@ -408,6 +408,22 @@ async function postReview(booking_id, rating, comment) {
     }
 }
 
+async function getReviewDate(booking_id, booking_type) {
+    try {
+        const response = await fetch(`http://3.226.141.243:8004/getDate/${booking_id}/${booking_type}`, {
+            method: 'GET'
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const result = await response.json();
+        return result
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 
 
 function formatCurrency(amount) {
@@ -431,6 +447,7 @@ function convertDateToIndonesian(dateStr) {
 
 document.addEventListener('DOMContentLoaded', (event) => {
     getData();
+    getReviewDate(booking_id, booking_type)
     const modal = document.getElementById('reviewModal');
     let valueStar = 0
     const comment = document.getElementById('comment');

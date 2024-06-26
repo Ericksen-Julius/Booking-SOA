@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const count = document.getElementById('count')
     const ticket_price_1 = document.getElementById('ticket_price_1')
     const submitButton = document.getElementById('book')
-    const service_url = ''
+    let service_url = ''
     let ticketPriceValue = 0
     let totalPriceValue = 0
     let providerName = 'Dufan'
@@ -27,6 +27,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
     console.log(get_visit_date)
     console.log(packet_attraction_id)
     console.log(service_id)
+
+    if (!service_id || !get_visit_date || !packet_attraction_id) {
+        document.body.innerHTML = '<h1>Access Denied</h1>';
+        return;
+    }
 
     const dateVisit = new Date(get_visit_date);
 
@@ -44,25 +49,26 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
     async function getTicketData() {
-        console.log("uhuy")
-        // try {
-        //     const response = await fetch(`http://52.200.174.164:8003/service/${service_id}`, {
-        //         method: 'GET',
-        //     });
+        try {
+            const response = await fetch(`http://107.20.145.163:8003/atraksi/${service_id}/attractioname/-/minprice/-/maxprice/-`, {
+                method: 'GET',
+            });
 
-        //     if (!response.ok) {
-        //         throw new Error(`HTTP error! Status: ${response.status}`);
-        //     }
-        //     const result = await response.json()
-        //     service_url = result.data.service_url
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const result = await response.json()
+            providerName = result.data.service_name
+            provider_name.innerHTML = result.data.service_name
+            service_url = result.data.atraksi_url
 
-        // } catch (error) {
-        //     console.error('Error:', error);
-        // }
+        } catch (error) {
+            console.error('Error:', error);
+        }
 
         try {
             const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
-            const response = await fetch(`http://localhost:8000/reviewRating/${providerName}`, {
+            const response = await fetch(urlReview, {
                 method: 'GET',
             });
 
@@ -117,7 +123,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
         try {
             const url = `${service_url}/api/atraksi/paket/${packet_attraction_id}`
-            const response = await fetch(`http://3.217.250.166:8003/api/atraksi/paket/1`, {
+            const response = await fetch(`http://3.217.250.166:8003/api/atraksi/paket/${packet_attraction_id}`, {
                 method: 'GET',
             });
 
@@ -150,17 +156,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
         const openDays = jamBuka.filter(day => day.is_open === 1).map(day => day.hari);
 
         if (openDays.length === 7) {
-            // If all days are open, use the general format
             return `Open | Senin-Minggu, ${jamBuka[0].waktu}`;
         } else {
-            // Otherwise, create a string of open days
             const openDaysString = openDays.join(",");
-            const openingTime = jamBuka[0].waktu; // Assuming waktu is the same for all days
+            const openingTime = jamBuka[0].waktu;
             return `Open | ${openDaysString}, ${openingTime}`;
         }
     }
 
-    // Example data similar to your provided example
     // const jamBuka = [
     //     { "hari": "Senin", "waktu": "09:00 - 17:00", "is_open": 1 },
     //     { "hari": "Selasa", "waktu": "09:00 - 17:00", "is_open": 1 },
@@ -171,7 +174,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     //     { "hari": "Minggu", "waktu": "09:00 - 17:00", "is_open": 1 }
     // ];
 
-    // Call the function with example data
 
 
 
@@ -215,8 +217,29 @@ document.addEventListener('DOMContentLoaded', (event) => {
         const user_id = localStorage.getItem('userID');
 
         try {
+            const response1 = await fetch(`${service_url}api/eticket/${get_visit_date}`, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+            if (!response1.ok) {
+                throw new Error(`HTTP error! Status: ${response1.status}`);
+            }
+            const result1 = await response1.json();
+            if (result1.kuota < counterValue) {
+                Swal.fire({
+                    title: "Failed",
+                    text: `Kuota tersisa ${result1.kuota}`,
+                    icon: "success"
+                })
+                return
+            }
+        } catch (error) {
+            console.log(error)
+        }
+
+        try {
             const urlPost = `http://3.226.141.243:8004/booking`
-            const response1 = await fetch(`http://localhost:8000/booking`, {
+            const response1 = await fetch(urlPost, {
                 method: 'POST',
                 body: JSON.stringify(data)
             });
@@ -260,32 +283,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     }
 
-    async function coba() {
-        const data = {
-            user_id: 1,
-            type: "Attraction",
-            total_price: totalPriceValue,
-            provider_name: providerName,
-            paket_attraction_id: packet_attraction_id,
-            visit_date: get_visit_date,
-            number_of_tickets: counterValue,
-            service_id: service_id
-        };
-        try {
-            const urlPost = `http://localhost:8000/booking`
-            const response1 = await fetch(urlPost, {
-                method: 'POST',
-                body: JSON.stringify(data)
-            });
-            if (!response1.ok) {
-                throw new Error(`HTTP error! Status: ${response1.status}`);
-            }
-            const result1 = await response1.json();
-            console.log(result1)
-        } catch (error) {
-
-        }
-    }
     getTicketData()
     submitButton.addEventListener('click', function () {
         if (isDateInThePast(get_visit_date)) {
