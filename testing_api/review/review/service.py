@@ -11,6 +11,7 @@ class ReviewService:
     def add_review(self, booking_id, rating, comment, option_ids):
         response = self.database.add_review(booking_id=booking_id, rating=rating, comment=comment, option_ids=option_ids)
         return response
+    
     @rpc
     def get_rating_type(self,service_type):
         response = self.database.get_rating_type(service_type=service_type)
@@ -18,12 +19,17 @@ class ReviewService:
     @rpc
     def get_information_provider(self,provider_name):
         response = self.database.get_information_provider(provider_name=provider_name)
+        return response 
+    @rpc
+    def get_rating_provider(self,provider_name):
+        response = self.database.get_rating_provider(provider_name=provider_name)
+        return response
+
+    @rpc
+    def get_completed_booking(self, booking_type):
+        response = self.database.get_completed_booking(booking_type=booking_type)
         return response
     @rpc
-    def get_completed_booking(self, user_id):
-        response = self.database.get_completed_booking(user_id=user_id)
-        return response
-    @rpc
-    def get_all_review_options(self, user_id):
-        response = self.database.get_completed_booking(user_id=user_id)
+    def get_review_comment(self, provider_name):
+        response = self.database.get_review_comment(provider_name=provider_name)
         return response

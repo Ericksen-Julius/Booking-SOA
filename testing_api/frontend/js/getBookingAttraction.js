@@ -1,3 +1,4 @@
+localStorage.setItem('userID', 1);
 
 document.addEventListener('DOMContentLoaded', (event) => {
     const params = new URLSearchParams(window.location.search);
@@ -202,7 +203,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     async function postBookingAttraction() {
         const data = {
-            user_id: 1,
+            user_id: user_id,
             type: "Attraction",
             total_price: totalPriceValue,
             provider_name: providerName,
@@ -211,6 +212,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
             number_of_tickets: counterValue,
             service_id: service_id
         };
+        const user_id = localStorage.getItem('userID');
+
         try {
             const urlPost = `http://3.226.141.243:8004/booking`
             const response1 = await fetch(`http://localhost:8000/booking`, {

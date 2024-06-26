@@ -29,6 +29,10 @@ class ReviewService:
     def get_completed_booking(self, booking_type):
         response = self.database.get_completed_booking(booking_type=booking_type)
         return response
+    @rpc
+    def get_review_comment(self, provider_name):
+        response = self.database.get_review_comment(provider_name=provider_name)
+        return response
     # @rpc
     # def get_reviews_by_booking(self, booking_id):
     #     reviews = self.database.get_reviews_by_booking(booking_id)

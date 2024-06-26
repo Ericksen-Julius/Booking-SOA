@@ -8,7 +8,6 @@ class BookingService:
 
     database = sql_dependencies.Database()
 
-
     @rpc
     def get_all_bookings(self):
         bookings = self.database.get_all_bookings()

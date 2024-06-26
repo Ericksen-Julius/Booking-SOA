@@ -1,3 +1,4 @@
+localStorage.setItem('userID', 1);
 
 document.addEventListener('DOMContentLoaded', (event) => {
     const params = new URLSearchParams(window.location.search);
@@ -199,8 +200,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     getFlightData()
 
     async function postBookingAirline() {
+        const user_id = localStorage.getItem('userID');
         const data = {
-            user_id: 1,
+            user_id: user_id,
             type: "Airline",
             total_price: totalPriceValue,
             provider_name: providerName,

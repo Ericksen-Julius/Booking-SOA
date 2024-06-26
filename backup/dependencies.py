@@ -179,6 +179,7 @@ class DatabaseWrapper:
                 """
                 cursor.execute(sql,(booking_code,))
                 bookings = cursor.fetchone()
+                cursor.close()
                 if bookings:
                     if isinstance(bookings['visit_date'], date):
                         bookings['visit_date'] = bookings['visit_date'].isoformat()
@@ -291,7 +292,7 @@ class DatabaseWrapper:
             cursor = self.connection.cursor(dictionary=True)
             while(True):
                 random_code = generate_string()
-                booking_code = f'{type[0]}{random_code}'
+                booking_code = f'{type[0]}{random_code}' if type != 'Airline' else f'T{random_code}'
                 check_sql = "SELECT * FROM `bookings` WHERE booking_code = %s"
                 cursor.execute(check_sql,(booking_code,))
                 exist_code = cursor.fetchone()
@@ -704,6 +705,21 @@ class DatabaseWrapper:
             results = cursor.fetchall()
             cursor.close()
 
+            if not results:
+                return {'error': 'No completed bookings without reviews found', 'status': 404}
+            return {'data': results, 'status': 200}
+        except Exception as e:
+            return {'error': str(e), 'status': 500}
+    def get_review_comment(self, provider_name):
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            # SQL to get completed bookings that do not have a review yet
+            sql = """
+                SELECT a.user_id,r.comment,r.rating FROM bookings AS a JOIN reviews AS r ON a.id = r.booking_id WHERE a.provider_name = %s
+            """
+            cursor.execute(sql, (provider_name,))
+            results = cursor.fetchall()
+            cursor.close()
             if not results:
                 return {'error': 'No completed bookings without reviews found', 'status': 404}
             return {'data': results, 'status': 200}

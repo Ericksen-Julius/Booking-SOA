@@ -161,36 +161,36 @@ class GatewayService:
             error_message = str(e)
             return 500, json.dumps({'error': error_message})
 
-    @http('GET', '/review/booking/<int:booking_id>')
-    def get_reviews_by_booking(self, request, booking_id):
-        try:
-            reviews = self.review_rpc.get_reviews_by_booking(booking_id)
-            return 200, self.header, json.dumps(reviews)
-        except Exception as e:
-            error_message = str(e)
-            return 500, json.dumps({'error': error_message})
+    # @http('GET', '/review/booking/<int:booking_id>')
+    # def get_reviews_by_booking(self, request, booking_id):
+    #     try:
+    #         reviews = self.review_rpc.get_reviews_by_booking(booking_id)
+    #         return 200, self.header, json.dumps(reviews)
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return 500, json.dumps({'error': error_message})
 
-    @http('GET', '/review/user/<int:user_id>')
-    def get_reviews_by_user(self, request, user_id):
-        try:
-            reviews = self.review_rpc.get_reviews_by_user(user_id)
-            return 200, self.header,json.dumps(reviews)
-        except Exception as e:
-            error_message = str(e)
-            return 500, json.dumps({'error': error_message})
+    # @http('GET', '/review/user/<int:user_id>')
+    # def get_reviews_by_user(self, request, user_id):
+    #     try:
+    #         reviews = self.review_rpc.get_reviews_by_user(user_id)
+    #         return 200, self.header,json.dumps(reviews)
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return 500, json.dumps({'error': error_message})
 
-    @http('PUT', '/review/<int:review_id>')
-    def edit_review(self, request, review_id):
-        try:
-            data = request.get_data(as_text=True)
-            review_data = json.loads(data)
-            rating = review_data.get('rating')
-            review_text = review_data.get('review_text')
-            response = self.review_rpc.edit_review(review_id, rating, review_text)
-            return response['status'],self.header, json.dumps({'message': response['message']})
-        except Exception as e:
-            error_message = str(e)
-            return 500, json.dumps({'error': error_message})
+    # @http('PUT', '/review/<int:review_id>')
+    # def edit_review(self, request, review_id):
+    #     try:
+    #         data = request.get_data(as_text=True)
+    #         review_data = json.loads(data)
+    #         rating = review_data.get('rating')
+    #         review_text = review_data.get('review_text')
+    #         response = self.review_rpc.edit_review(review_id, rating, review_text)
+    #         return response['status'],self.header, json.dumps({'message': response['message']})
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return 500, json.dumps({'error': error_message})
         
     @http("GET", "/reviews/<string:service_type>")
     def get_rating_type(self, request, service_type):
@@ -207,16 +207,16 @@ class GatewayService:
             error_message = str(e)
             return 500,self.header, json.dumps({'error': error_message})
     
-    @http("GET", "/reviewProvider/<string:provider_name>")
-    def get_information_provider(self, request, provider_name):
-        try:
-            result = self.review_rpc.get_information_provider(provider_name=provider_name)
-            if(result['status'] == 200):
-                return (result['status'],self.header,json.dumps(result['data']))
-            return 500, self.header, json.dumps(result['error'])
-        except Exception as e:
-            error_message = str(e)
-            return 500,self.header, json.dumps({'error': error_message})
+    # @http("GET", "/reviewProvider/<string:provider_name>")
+    # def get_information_provider(self, request, provider_name):
+    #     try:
+    #         result = self.review_rpc.get_information_provider(provider_name=provider_name)
+    #         if(result['status'] == 200):
+    #             return (result['status'],self.header,json.dumps(result['data']))
+    #         return 500, self.header, json.dumps(result['error'])
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return 500,self.header, json.dumps({'error': error_message})
         
     @http("GET", "/reviewRating/<string:provider_name>")
     def get_rating_provider(self, request, provider_name):
@@ -229,10 +229,22 @@ class GatewayService:
             error_message = str(e)
             return 500,self.header, json.dumps({'error': error_message})
         
-    @http('GET', '/completed_bookings/<string:booking_type>')
-    def get_completed_booking(self, request, booking_type):
+    # @http('GET', '/completed_bookings/<string:booking_type>')
+    # def get_completed_booking(self, request, booking_type):
+    #     try:
+    #         result = self.review_rpc.get_completed_booking(booking_type=booking_type)
+    #         if result['status'] == 200:
+    #             return 200, self.header, json.dumps(result['data'])
+    #         else:
+    #             return result['status'],json.dumps({'error': result.get('error', 'Unknown error')})
+    #     except Exception as e:
+    #         error_message = str(e)
+    #         return 500, json.dumps({'error': error_message})
+    
+    @http('GET', '/reviewComment/<string:provider_name>')
+    def get_review_comment(self, request, provider_name):
         try:
-            result = self.review_rpc.get_completed_booking(booking_type=booking_type)
+            result = self.review_rpc.get_review_comment(provider_name=provider_name)
             if result['status'] == 200:
                 return 200, self.header, json.dumps(result['data'])
             else:
@@ -240,6 +252,7 @@ class GatewayService:
         except Exception as e:
             error_message = str(e)
             return 500, json.dumps({'error': error_message})
+    
 
     # @http('POST', '/refund')
     # def trigger_refund(self, request):

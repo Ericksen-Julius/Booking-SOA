@@ -75,6 +75,8 @@ class DatabaseWrapper:
                     a.service_id,
                     a.provider_name,
                     a.booking_code,
+                    a.booking_type,
+                    a.id,
                     CAST(a.total_price AS INT) AS total_price,
                     b.room_type,
                     b.check_in_date,
@@ -102,7 +104,9 @@ class DatabaseWrapper:
                 SELECT 
                     a.service_id,
                     a.booking_code,
+                    a.booking_type,
                     a.provider_name,
+                    a.id,
                     CAST(a.total_price AS INT) AS total_price,
                     a.asuransi_id,
                     b.flight_id,
@@ -127,6 +131,8 @@ class DatabaseWrapper:
                     a.service_id,
                     a.booking_code,
                     a.provider_name,
+                    a.booking_type,
+                    a.id,
                     CAST(a.total_price AS INT) AS total_price,
                     a.asuransi_id,
                     b.pickup_date,
@@ -157,6 +163,8 @@ class DatabaseWrapper:
                     a.service_id,
                     a.booking_code,
                     a.provider_name,
+                    a.booking_type,
+                    a.id,
                     CAST(a.total_price AS INT) AS total_price,
                     b.visit_date,
                     b.paket_attraction_id
@@ -171,6 +179,7 @@ class DatabaseWrapper:
                 """
                 cursor.execute(sql,(booking_code,))
                 bookings = cursor.fetchone()
+                cursor.close()
                 if bookings:
                     if isinstance(bookings['visit_date'], date):
                         bookings['visit_date'] = bookings['visit_date'].isoformat()
@@ -283,7 +292,7 @@ class DatabaseWrapper:
             cursor = self.connection.cursor(dictionary=True)
             while(True):
                 random_code = generate_string()
-                booking_code = f'{type[0]}{random_code}'
+                booking_code = f'{type[0]}{random_code}' if type != 'Airline' else f'T{random_code}'
                 check_sql = "SELECT * FROM `bookings` WHERE booking_code = %s"
                 cursor.execute(check_sql,(booking_code,))
                 exist_code = cursor.fetchone()

@@ -1,4 +1,4 @@
-
+localStorage.setItem('userID', 1);
 document.addEventListener('DOMContentLoaded', (event) => {
     const params = new URLSearchParams(window.location.search);
     const service_id = params.get('service_id');
@@ -120,24 +120,25 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
     async function getCarData() {
-        try {
-            const response = await fetch(`http://52.200.174.164:8003/service/${service_id}`, {
-                method: 'GET',
-            });
+        console.log("check")
+        // try {
+        //     const response = await fetch(`http://52.200.174.164:8003/service/${service_id}`, {
+        //         method: 'GET',
+        //     });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const result = await response.json()
-            provider_name.innerHTML = result.data.provider_name
-            service_url = result.data.service_url
-        } catch (error) {
-            console.error('Error:', error);
-        }
+        //     if (!response.ok) {
+        //         throw new Error(`HTTP error! Status: ${response.status}`);
+        //     }
+        //     const result = await response.json()
+        //     provider_name.innerHTML = result.data.provider_name
+        //     service_url = result.data.service_url
+        // } catch (error) {
+        //     console.error('Error:', error);
+        // }
 
         try {
             const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
-            const response = await fetch(urlReview, {
+            const response = await fetch(`http://localhost:8000/reviewRating/${providerName}`, {
                 method: 'GET',
             });
 
@@ -154,7 +155,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
         try {
             const url = `${service_url}/car/${car_id}}`
-            const response = await fetch(url, {
+            const response = await fetch(`http://3.228.174.120:8005/car/${car_id}`, {
                 method: 'GET',
             });
 
@@ -199,8 +200,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 }
             })
         }
+        const user_id = localStorage.getItem('userID');
         const data = {
-            user_id: 1,
+            user_id: user_id,
             type: "Rental",
             total_price: totalPriceValue,
             provider_name: providerName,
@@ -255,7 +257,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
         } catch (error) {
             console.error('Error:', error);
         }
+
     }
+    getCarData()
 
     async function coba() {
 
@@ -289,7 +293,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     }
     submitButton.addEventListener('click', function () {
-        coba()
+        postBookingRental()
     })
 
 });
