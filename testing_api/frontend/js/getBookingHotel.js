@@ -74,13 +74,13 @@ document.addEventListener('DOMContentLoaded', function () {
             providerName = result.data.nama
             service_url = result.data.url
             console.log(service_url)
+            console.log("cek")
         } catch (error) {
             console.error('Error:', error);
         }
-        return
 
         try {
-            const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
+            const urlReview = `http://localhost:8000/reviewRating/${providerName}`
             const response = await fetch(urlReview, {
                 method: 'GET',
             });
@@ -146,24 +146,26 @@ document.addEventListener('DOMContentLoaded', function () {
         totalPriceValue = roomPriceValue * counterValue;
         total_price.innerHTML = `Rp. ${formatRupiah(totalPriceValue)}`;
     }
-    getRoomData()
 
     async function postBookingHotel() {
         console.log(check_in)
         console.log(check_out)
         console.log(room_id)
+        const user_id = localStorage.getItem('userID');
+        // console.log(user_id)
         const data = {
-            user_id: 1,
+            user_id: user_id,
             type: "Hotel",
             total_price: totalPriceValue,
             provider_name: providerName,
             room_type: room_id,
             check_in_date: check_in,
             check_out_date: check_out,
-            number_of_rooms: counterValue
+            number_of_rooms: counterValue,
+            service_id: service_id
         };
         try {
-            const url = `http://3.215.46.161:8011/hotel/room_type/"${check_in}"&"${check_out}"`
+            const url = `http://3.215.46.161:8013/hotel/room_type/${check_in}&${check_out}`
             const response = await fetch(url, {
                 method: 'GET'
             });
@@ -174,10 +176,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             var result = await response.json()
             console.log(result[0])
-            var result2 = result.find(room => room.id === room_id);
-            console.log(result2)
-            return
-            if (result.total_room >= counterValue) {
+            console.log(room_id)
+            var resultRoom = result.find(room => room.id == room_id);
+            console.log(resultRoom.available_room)
+            if (resultRoom.available_room >= counterValue) {
                 const urlPost = `http://localhost:8000/booking`
                 const response1 = await fetch(urlPost, {
                     method: 'POST',
@@ -196,9 +198,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         booking_id: result1.booking_id,
                         check_in_date: check_in,
                         check_out_date: check_out,
-                        type_room: room_id,
-                        total_room: counterValue
+                        type_id: parseInt(room_id),
+                        total_room: parseInt(counterValue)
                     };
+                    console.log(data1)
                     const response2 = await fetch("http://3.215.46.161:8013/hotel/reservation", {
                         method: 'POST',
                         body: JSON.stringify(data1)
@@ -207,7 +210,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log(response2.status)
 
                     if (!response2.ok) {
-                        throw new Error(`HTTP error! Status: ${response2.status}`);
+                        Swal.fire({
+                            title: "Failed",
+                            text: "Maaf ada kendala!",
+                            icon: "error"
+                        }).then((result) => {
+                            // if (result.isConfirmed) {
+                            //     window.location.href = `http://3.226.141.243:8004/paymentHotel.php?booking_code=${result1.booking_code}&booking_id=${result1.booking_id}`;
+                            // }
+                        });
                     } else {
                         Swal.fire({
                             title: "Success",
@@ -222,7 +233,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 }
             } else {
-
+                Swal.fire({
+                    title: "Failed",
+                    text: "Room tidak tersedia!",
+                    icon: "error"
+                }).then((result) => {
+                    // if (result.isConfirmed) {
+                    //     window.location.href = `http://3.226.141.243:8004/paymentHotel.php?booking_code=${result1.booking_code}&booking_id=${result1.booking_id}`;
+                    // }
+                });
             }
 
         } catch (error) {
@@ -273,8 +292,10 @@ document.addEventListener('DOMContentLoaded', function () {
         postBookingHotel()
     })
 
-});
+    // getRoomData()
 
+});
+localStorage.setItem('userID', 1);
 
 function formatRupiah(number) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");

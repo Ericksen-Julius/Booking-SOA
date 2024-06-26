@@ -29,9 +29,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const carInsurance = document.getElementById('insuranceCheckbox1')
 
     let providerName = 'Yanto Car'
-    let totalPriceValue = 0
+    let totalPriceValue = 100000
     let insurance_price = 0
     let pricelist
+    total_price.innerHTML = `Rp. ${formatRupiah(totalPriceValue)}`
 
     console.log(service_id)
     console.log(pickup)
@@ -74,12 +75,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     carInsurance.addEventListener('click', () => {
         asuransi_id = carInsurance.checked ? 1 : 0;
-
+        console.log(insurance_price)
         if (asuransi_id == 1) {
             totalPriceValue += insurance_price
         } else {
             totalPriceValue -= insurance_price
         }
+        total_price.innerHTML = `Rp. ${formatRupiah(totalPriceValue)}`
+        console.log(totalPriceValue)
         // You can now use the `checkboxState` variable as needed
     });
 
@@ -94,17 +97,20 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
             const result = await response.json()
             console.log(result)
-            pricelist = result.filter(insurance => insurance.id_car === car_id);
-            const keys = Object.keys(pricelist);
+            pricelist = result.filter(insurance => insurance.id_car == car_id);
+            console.log(pricelist)
+            const keys = Object.keys(pricelist[0]);
 
-            for (let i = 5; i < keys.length; i++) {
-                const [min, max] = keys[i].split('-').map(Number);
+            for (let i = 4; i < keys.length; i++) {
+                console.log(keys[i].toString())
+                const [min, max] = keys[i].toString().split('-').map(Number);
+                console.log(min)
                 if (dayRental >= min && dayRental <= max) {
-                    insurance_price = pricelist[keys[i]]
+                    insurance_price = pricelist[0][keys[i]]
                     break
                 }
             }
-            console.log(insurance_price)
+            // console.log(insurance_price)
         } catch (error) {
             console.error('Error:', error);
         }
@@ -179,7 +185,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             console.error('Error:', error);
         }
     }
-    getCarData()
+    // getCarData()
 
     async function postBookingRental() {
         if (pick_up_location.value == '' || return_location.value == '') {

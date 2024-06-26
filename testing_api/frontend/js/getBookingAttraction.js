@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
     async function getTicketData() {
+        console.log("uhuy")
         // try {
         //     const response = await fetch(`http://52.200.174.164:8003/service/${service_id}`, {
         //         method: 'GET',
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
         try {
             const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
-            const response = await fetch(urlReview, {
+            const response = await fetch(`http://localhost:8000/reviewRating/${providerName}`, {
                 method: 'GET',
             });
 
@@ -198,7 +199,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         totalPriceValue = ticketPriceValue * counterValue;
         total_price.innerHTML = `Rp. ${formatRupiah(totalPriceValue)}`;
     }
-    getTicketData()
 
     async function postBookingAttraction() {
         const data = {
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         };
         try {
             const urlPost = `http://3.226.141.243:8004/booking`
-            const response1 = await fetch(urlPost, {
+            const response1 = await fetch(`http://localhost:8000/booking`, {
                 method: 'POST',
                 body: JSON.stringify(data)
             });
@@ -225,16 +225,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 const url2 = `${service_url}/api/eticket`
                 const data1 = {
                     _token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoidGlwZW4ifQ.bFPsfkx60z4QfIGTJNgrB4nRBtF727hN6lUGIp1u9Nw",
-                    paket_id: paket_attraction_id,
+                    paket_id: packet_attraction_id,
                     jml_ticket: counterValue,
                     booking_code: result1.booking_code,
                     tgl_booking: get_visit_date
                 };
-                const response2 = await fetch(url2, {
+                const response2 = await fetch(`http://3.217.250.166:8003/api/eticket`, {
                     method: 'POST',
                     body: JSON.stringify(data1)
                 });
-
+                const result = await response2.json()
+                console.log(result)
                 if (!response2.ok) {
                     throw new Error(`HTTP error! Status: ${response2.status}`);
                 } else {
@@ -243,9 +244,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         text: "Booking success!",
                         icon: "success"
                     }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = `http://3.226.141.243:8004/paymentTempatAtraksi.php?booking_code=${result1.booking_code}&booking_id=${result1.booking_id}`;
-                        }
+                        // if (result.isConfirmed) {
+                        //     window.location.href = `http://3.226.141.243:8004/paymentTempatAtraksi.php?booking_code=${result1.booking_code}&booking_id=${result1.booking_id}`;
+                        // }
                     });
                 }
 
@@ -282,9 +283,25 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
         }
     }
+    getTicketData()
     submitButton.addEventListener('click', function () {
-        coba()
+        if (isDateInThePast(get_visit_date)) {
+            Swal.fire({
+                title: "Failed",
+                text: "Invalid date!",
+                icon: "error"
+            })
+            return
+        }
+        postBookingAttraction()
     })
+    function isDateInThePast(dateString) {
+        const inputDate = new Date(dateString);
+
+        const currentDate = new Date();
+
+        return inputDate < currentDate;
+    }
 
 });
 
