@@ -395,11 +395,26 @@ function convertDateToIndonesian(dateStr) {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    getData();
-    const reviewButton = document.getElementById('review');
-    reviewButton.addEventListener('click', () => {
-        console.log("booking_id, booking_code");
-        
-        getReview(booking_id, booking_type);
+    // getData();
+    const modal = document.getElementById('reviewModal');
+    let valueStar = 0
+    const comment = document.getElementById('comment');
+    const buttonSubmit = document.getElementById('submitComment');
+    const stars = modal.querySelectorAll('.rating-stars i');
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const value = parseInt(star.getAttribute('data-value'));
+            stars.forEach(s => s.classList.remove('active'));
+            for (let i = 0; i < value; i++) {
+                stars[i].classList.add('active');
+            }
+            // document.querySelector('.rating input').value = value;
+            valueStar = value;
+            console.log(valueStar)
+        });
     });
+    buttonSubmit.addEventListener('click', () => {
+        console.log(comment.value)
+    })
+
 });
