@@ -228,6 +228,18 @@ class GatewayService:
         except Exception as e:
             error_message = str(e)
             return 500, json.dumps({'error': error_message})
+        
+    @http('GET', '/completed_bookings/<int:user_id>')
+    def get_completed_booking(self, request, user_id):
+        try:
+            result = self.review_rpc.get_completed_booking(user_id=user_id)
+            if result['status'] == 200:
+                return 200, json.dumps(result['data'])
+            else:
+                return result['status'], json.dumps({'error': result.get('error', 'Unknown error')})
+        except Exception as e:
+            error_message = str(e)
+            return 500, json.dumps({'error': error_message})
 
     # @http('POST', '/refund')
     # def trigger_refund(self, request):
