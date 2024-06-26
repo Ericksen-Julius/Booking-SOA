@@ -733,7 +733,7 @@ class DatabaseWrapper:
     #         return {'error': error_message, 'status': 500}
         
     
-    def get_completed_booking(self, booking_type):
+    def get_review_options(self, booking_type):
         try:
             cursor = self.connection.cursor(dictionary=True)
             # SQL to get completed bookings that do not have a review yet
@@ -745,7 +745,7 @@ class DatabaseWrapper:
             cursor.close()
 
             if not results:
-                return {'error': 'No completed bookings without reviews found', 'status': 404}
+                return {'error': 'No review options available', 'status': 404}
             return {'data': results, 'status': 200}
         except Exception as e:
             return {'error': str(e), 'status': 500}

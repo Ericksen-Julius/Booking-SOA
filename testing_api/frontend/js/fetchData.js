@@ -609,7 +609,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     buttonSubmit.addEventListener('click', () => {
         console.log(comment.value)
     })
-    getReviewDate(84, 'Hotel')
+    // getReviewDate(84, 'Hotel')
 
 
 
