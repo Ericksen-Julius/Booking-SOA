@@ -512,6 +512,7 @@ async function postReview(booking_id, rating, comment) {
     } catch (error) {
         console.error('Error:', error);
     }
+
 }
 
 async function getReviewDate(booking_id, booking_type) {
@@ -524,10 +525,26 @@ async function getReviewDate(booking_id, booking_type) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const result = await response.json();
-        return result
+        console.log(result)
+        const reviewButton = document.getElementById('review')
+        if (result.data.reviewed) {
+            reviewButton.style.display = 'none'
+        } else if (isDatePassed(result.data.date) == false) {
+            reviewButton.style.display = 'none'
+        } else {
+            reviewButton.style.display = 'inline'
+        }
     } catch (error) {
         console.log(error)
     }
+}
+
+function isDatePassed(targetDateStr) {
+    const currentDate = new Date();
+
+    const targetDate = new Date(targetDateStr);
+
+    return currentDate > targetDate;
 }
 
 
@@ -568,8 +585,10 @@ function calculateDays(startDateStr, endDateStr) {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    getData();
-    getReviewDate(booking_id, booking_type)
+    // getData();
+    // getReviewDate(booking_id, booking_type)
+    const reviewButton = document.getElementById('review');
+    reviewButton.style.display = 'none'
     const modal = document.getElementById('reviewModal');
     let valueStar = 0
     const comment = document.getElementById('comment');
@@ -590,5 +609,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     buttonSubmit.addEventListener('click', () => {
         console.log(comment.value)
     })
+    getReviewDate(84, 'Hotel')
+
+
 
 });
