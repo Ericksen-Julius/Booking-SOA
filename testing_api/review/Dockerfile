@@ -1,5 +1,5 @@
 # Base Image
-FROM python:3.8-slim as base
+FROM python:3.8-slim AS base
 
 # Install necessary packages
 RUN apt-get update && \
@@ -23,7 +23,7 @@ RUN groupadd -r nameko && useradd -r -g nameko nameko
 RUN mkdir /var/nameko/ && chown -R nameko:nameko /var/nameko/
 
 # Builder Image
-FROM base as builder
+FROM base AS builder
 
 # Install build dependencies
 RUN apt-get update && \
@@ -46,7 +46,7 @@ RUN pip wheel .
 RUN ls /application/wheelhouse
 
 # Install Image
-FROM base as install
+FROM base AS install
 
 COPY --from=builder /application/wheelhouse /wheelhouse
 
@@ -54,7 +54,7 @@ COPY --from=builder /application/wheelhouse /wheelhouse
 RUN pip install --no-index -f /wheelhouse review-services
 
 # Final Service Image
-FROM base as service
+FROM base AS service
 
 COPY --from=install /appenv /appenv
 

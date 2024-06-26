@@ -38,3 +38,4 @@ COPY . /application
 # Set environment variables for pip wheel directory
 ENV PIP_WHEEL_DIR=/application/wheelhouse
 ENV PIP_FIND_LINKS=/application/wheelhouse
+
