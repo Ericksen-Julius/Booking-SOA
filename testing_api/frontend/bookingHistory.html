@@ -227,12 +227,10 @@
                         <label for="comment" class="form-label">Comment</label>
                         <textarea class="form-control" id="comment" rows="3"></textarea>
                     </div>
-                    <div class="mb-3">
-                        <input class="btn btn-secondary" id="answer1" type="button" value="A" />
-                        <input class="btn btn-secondary" id="answer2" type="button" value="B" />
-                        <input class="btn btn-secondary" id="answer3" type="button" value="C" />
-                        <input class="btn btn-secondary" id="answer4" type="button" value="D" />
-                        <input class="btn btn-secondary" id="answer5" type="button" value="E" />
+                    <div class="mb-3 d-flex flex-column align-items-center">
+                        <button class="btn btn-secondary mb-3 review-text-button" id="answer1" value="A"></button>
+                        <button class="btn btn-secondary mb-3 review-text-button" id="answer2" value="B"></button>
+                        <button class="btn btn-secondary mb-3 review-text-button" id="answer3" value="C"></button>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -248,18 +246,6 @@
         crossorigin="anonymous"></script>
     <script src="./js/fetchData.js"></script>
 
-    <script>
-        document.getElementById('review').addEventListener('click', function () {
-            document.getElementById('staticBackdropLabel').innerText = `Review for ${providerName}`;
-
-        });
-
-        document.addEventListener('DOMContentLoaded', (event) => {
-            let x = getData(); // Call getData function when the DOM is fully loaded
-            console.log("XXXXX",x)
-        });
-
-    </script>
 </body>
 
 

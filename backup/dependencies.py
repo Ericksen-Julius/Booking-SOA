@@ -738,12 +738,11 @@ class DatabaseWrapper:
             cursor = self.connection.cursor(dictionary=True)
             # SQL to get completed bookings that do not have a review yet
             sql = """
-                SELECT rating_group,option_text FROM review_options WHERE provider_type = %s;
+                SELECT rating_group,option_text,id FROM review_options WHERE provider_type = %s;
             """
             cursor.execute(sql, (booking_type,))
             results = cursor.fetchall()
             cursor.close()
-
             if not results:
                 return {'error': 'No review options available', 'status': 404}
             return {'data': results, 'status': 200}
