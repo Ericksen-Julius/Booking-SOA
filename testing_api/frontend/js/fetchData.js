@@ -24,7 +24,7 @@ async function getData() {
         var result = await response.json();
 
         result = result['booking details'] // Main Booking Table
-        console.log("RESULTTT",result)
+        console.log("RESULTTT", result)
 
         booking_id = result.id;
         booking_type = result.booking_type;
@@ -49,7 +49,7 @@ async function getData() {
                 providerDetails['kota'] = api_response['city']
                 providerDetails['negara'] = api_response['country']
 
-                if (api_response['image'] != null && typeof api_response['image'] === 'object' 
+                if (api_response['image'] != null && typeof api_response['image'] === 'object'
                     && api_response['image']['error'] === "No AWS credentials were provided.") {
                     providerDetails['image'] = "./assets/hotel.jpeg"; // Default value
                 } else {
@@ -195,7 +195,7 @@ async function getData() {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 resultDetails = await response.json();
-                console.log("RESULTDETAIL",resultDetails);
+                console.log("RESULTDETAIL", resultDetails);
             } catch (error) {
                 console.error('Error:', error);
             }
@@ -203,7 +203,7 @@ async function getData() {
             return "Error Booking code not valid", 400;
         }
 
-// ######################################################################################################### //
+        // ######################################################################################################### //
 
         provider.innerHTML = result.provider_name;
         total_price.innerHTML = formatCurrency(result.total_price);
@@ -460,7 +460,7 @@ async function getData() {
 
 }
 
-async function getReview(booking_id, booking_type){
+async function getReview(booking_id, booking_type) {
     try {
         const response = await fetch(`http://localhost:8000/completed_bookings/${booking_type}`, {
             method: 'GET',
@@ -471,7 +471,7 @@ async function getReview(booking_id, booking_type){
         }
         const result = await response.json();
         console.log(result)
-        if (result.length === 0){
+        if (result.length === 0) {
             reviewButton.innerHTML = "Write a Review";
         } else {
             reviewButton.innerHTML = "Edit Review";

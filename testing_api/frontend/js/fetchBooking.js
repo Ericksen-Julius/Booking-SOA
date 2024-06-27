@@ -4,7 +4,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function getBookingData() {
         try {
-            const response = await fetch('http://3.226.141.243:8004/booking/1', {
+            const url = `http://3.226.141.243:8004/booking/`
+            const response = await fetch('http://localhost:8000/booking/1', {
                 method: 'GET',
             });
 
