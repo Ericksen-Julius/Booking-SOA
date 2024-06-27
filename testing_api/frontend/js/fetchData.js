@@ -14,7 +14,7 @@ async function getData() {
     }
 
     try {
-        const response = await fetch(`http://localhost:8000/bookingDetails/${booking_code}`, {
+        const response = await fetch(`http://3.226.141.243:8004/bookingDetails/${booking_code}`, {
             method: 'GET',
         });
 
@@ -452,7 +452,7 @@ async function getData() {
         document.getElementById('infoContainer').innerHTML = info;
         document.getElementById('bookContainer').innerHTML = book;
         document.getElementById('recipientContainer').innerHTML = recipient;
-
+        getReview(booking_type);
     } catch (error) {
         console.error('Error:', error);
     }
@@ -460,15 +460,20 @@ async function getData() {
 
 }
 
+<<<<<<< HEAD
 async function getReview(booking_id, booking_type) {
+=======
+async function getReview(booking_type){
+>>>>>>> b4777528f4329a0c9a09d95c7b2041be9c70a81d
     try {
-        const response = await fetch(`http://localhost:8000/completed_bookings/${booking_type}`, {
+        const response = await fetch(`http://localhost:8000/get_review_options/${booking_type}`, {
             method: 'GET',
         });
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        const reviewButton = document.getElementById('review')
         const result = await response.json();
         console.log(result)
         if (result.length === 0) {
@@ -585,8 +590,8 @@ function calculateDays(startDateStr, endDateStr) {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    // getData();
-    // getReviewDate(booking_id, booking_type)
+    getData();
+    getReviewDate(booking_id, booking_type)
     const reviewButton = document.getElementById('review');
     reviewButton.style.display = 'none'
     const modal = document.getElementById('reviewModal');
@@ -609,7 +614,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     buttonSubmit.addEventListener('click', () => {
         console.log(comment.value)
     })
-    getReviewDate(84, 'Hotel')
+    // getReviewDate(84, 'Hotel')
 
 
 

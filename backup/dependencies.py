@@ -77,7 +77,7 @@ class DatabaseWrapper:
                     a.booking_code,
                     a.booking_type,
                     a.id,
-                    CAST(a.total_price AS INT) AS total_price,
+                    CAST(a.total_price AS SIGNED) AS total_price,
                     b.room_type,
                     b.check_in_date,
                     b.check_out_date,
@@ -107,7 +107,7 @@ class DatabaseWrapper:
                     a.booking_type,
                     a.provider_name,
                     a.id,
-                    CAST(a.total_price AS INT) AS total_price,
+                    CAST(a.total_price AS SIGNED) AS total_price,
                     a.asuransi_id,
                     b.flight_id,
                     b.flight_date
@@ -133,7 +133,7 @@ class DatabaseWrapper:
                     a.provider_name,
                     a.booking_type,
                     a.id,
-                    CAST(a.total_price AS INT) AS total_price,
+                    CAST(a.total_price AS SIGNED) AS total_price,
                     a.asuransi_id,
                     b.pickup_date,
                     b.return_date,
@@ -165,7 +165,7 @@ class DatabaseWrapper:
                     a.provider_name,
                     a.booking_type,
                     a.id,
-                    CAST(a.total_price AS INT) AS total_price,
+                    CAST(a.total_price AS SIGNED) AS total_price,
                     b.visit_date,
                     b.paket_attraction_id
                 FROM 
@@ -733,7 +733,7 @@ class DatabaseWrapper:
     #         return {'error': error_message, 'status': 500}
         
     
-    def get_completed_booking(self, booking_type):
+    def get_review_options(self, booking_type):
         try:
             cursor = self.connection.cursor(dictionary=True)
             # SQL to get completed bookings that do not have a review yet
@@ -745,7 +745,7 @@ class DatabaseWrapper:
             cursor.close()
 
             if not results:
-                return {'error': 'No completed bookings without reviews found', 'status': 404}
+                return {'error': 'No review options available', 'status': 404}
             return {'data': results, 'status': 200}
         except Exception as e:
             return {'error': str(e), 'status': 500}
@@ -755,7 +755,7 @@ class DatabaseWrapper:
             # SQL to get completed bookings that do not have a review yet
             sql = """
                 SELECT a.user_id,r.comment,r.rating FROM bookings AS a JOIN reviews AS r ON a.id = r.booking_id WHERE a.provider_name = %s
-            """
+            """ 
             cursor.execute(sql, (provider_name,))
             results = cursor.fetchall()
             cursor.close()

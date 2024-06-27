@@ -26,8 +26,8 @@ class ReviewService:
         return response
 
     @rpc
-    def get_completed_booking(self, booking_type):
-        response = self.database.get_completed_booking(booking_type=booking_type)
+    def get_review_options(self, booking_type):
+        response = self.database.get_review_options(booking_type=booking_type)
         return response
     @rpc
     def get_review_comment(self, provider_name):
