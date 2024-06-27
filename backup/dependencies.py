@@ -755,7 +755,7 @@ class DatabaseWrapper:
             # SQL to get completed bookings that do not have a review yet
             sql = """
                 SELECT a.user_id,r.comment,r.rating FROM bookings AS a JOIN reviews AS r ON a.id = r.booking_id WHERE a.provider_name = %s
-            """
+            """ 
             cursor.execute(sql, (provider_name,))
             results = cursor.fetchall()
             cursor.close()

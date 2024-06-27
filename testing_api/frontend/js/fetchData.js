@@ -14,7 +14,7 @@ async function getData() {
     }
 
     try {
-        const response = await fetch(`http://localhost:8000/bookingDetails/${booking_code}`, {
+        const response = await fetch(`http://3.226.141.243:8004/bookingDetails/${booking_code}`, {
             method: 'GET',
         });
 
@@ -586,8 +586,8 @@ function calculateDays(startDateStr, endDateStr) {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    // getData();
-    // getReviewDate(booking_id, booking_type)
+    getData();
+    getReviewDate(booking_id, booking_type)
     const reviewButton = document.getElementById('review');
     reviewButton.style.display = 'none'
     const modal = document.getElementById('reviewModal');
