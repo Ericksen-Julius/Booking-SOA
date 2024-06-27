@@ -77,7 +77,7 @@ class DatabaseWrapper:
                     a.booking_code,
                     a.booking_type,
                     a.id,
-                    CAST(a.total_price AS INT) AS total_price,
+                    CAST(a.total_price AS SIGNED) AS total_price,
                     b.room_type,
                     b.check_in_date,
                     b.check_out_date,
@@ -107,7 +107,7 @@ class DatabaseWrapper:
                     a.booking_type,
                     a.provider_name,
                     a.id,
-                    CAST(a.total_price AS INT) AS total_price,
+                    CAST(a.total_price AS SIGNED) AS total_price,
                     a.asuransi_id,
                     b.flight_id,
                     b.flight_date
@@ -133,7 +133,7 @@ class DatabaseWrapper:
                     a.provider_name,
                     a.booking_type,
                     a.id,
-                    CAST(a.total_price AS INT) AS total_price,
+                    CAST(a.total_price AS SIGNED) AS total_price,
                     a.asuransi_id,
                     b.pickup_date,
                     b.return_date,
@@ -165,7 +165,7 @@ class DatabaseWrapper:
                     a.provider_name,
                     a.booking_type,
                     a.id,
-                    CAST(a.total_price AS INT) AS total_price,
+                    CAST(a.total_price AS SIGNED) AS total_price,
                     b.visit_date,
                     b.paket_attraction_id
                 FROM 
