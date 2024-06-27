@@ -460,11 +460,7 @@ async function getData() {
 
 }
 
-<<<<<<< HEAD
-async function getReview(booking_id, booking_type) {
-=======
-async function getReview(booking_type){
->>>>>>> b4777528f4329a0c9a09d95c7b2041be9c70a81d
+async function getReview(booking_type) {
     try {
         const response = await fetch(`http://localhost:8000/get_review_options/${booking_type}`, {
             method: 'GET',
