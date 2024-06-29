@@ -126,6 +126,7 @@ class GatewayService(object):
         except Exception as e:
             error_message = str(e)
             return 500,json.dumps({'error': error_message})
+        
     @http('GET', '/booking/getCountBookAirline')
     def getCountBookAirline(self, request):
         try:

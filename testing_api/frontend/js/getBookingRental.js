@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const return_location = document.getElementById('return');
     const is_with_driver = 0
     let asuransi_id = 0
-    let service_url = ''
+    let service_url = 'http://3.228.174.120:8001'
     const submitButton = document.getElementById('book')
     const carInsurance = document.getElementById('insuranceCheckbox1')
 
@@ -126,21 +126,21 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     async function getCarData() {
         console.log("check")
-        try {
-            const response = await fetch(`http://107.20.145.163:8003/carrental/service/${service_id}/pickup/-/returncar/-/car_id/-`, {
-                method: 'GET',
-            });
+        // try {
+        //     const response = await fetch(`http://107.20.145.163:8003/carrental/service/${service_id}/pickup/-/returncar/-/car_id/-`, {
+        //         method: 'GET',
+        //     });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const result = await response.json()
-            provider_name.innerHTML = result.data.service_name
-            providerName = result.data.service_name
-            service_url = result.data.url
-        } catch (error) {
-            console.error('Error:', error);
-        }
+        //     if (!response.ok) {
+        //         throw new Error(`HTTP error! Status: ${response.status}`);
+        //     }
+        //     const result = await response.json()
+        //     provider_name.innerHTML = result.data.service_name
+        //     providerName = result.data.service_name
+        //     service_url = result.data.url
+        // } catch (error) {
+        //     console.error('Error:', error);
+        // }
 
         try {
             const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     total_harga: totalPriceValue,
                     car_id: parseInt(car_id)
                 };
-                const response2 = await fetch(`http://3.228.174.120:8001/booking_add`, {
+                const response2 = await fetch(service_url, {
                     method: 'POST',
                     body: JSON.stringify(data1)
                 });
