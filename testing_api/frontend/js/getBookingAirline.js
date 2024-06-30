@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         totalPriceValue += result[0].price
 
         try {
-            const response = await fetch(`http://107.20.145.163:8003/airline/${service_id}/attractioname/-/minprice/-/maxprice/-`, {
+            const response = await fetch(`http://107.20.145.163:8003/airline/${service_id}/airlinename/-/minprice/-/maxprice/-`, {
                 method: 'GET',
             });
             if (!response.ok) {

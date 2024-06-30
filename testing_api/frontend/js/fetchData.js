@@ -671,7 +671,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
     getData();
 
-    // getReviewDate(booking_id, booking_type)
+    getReviewDate(booking_id, booking_type)
 
     buttonSubmit.addEventListener('click', () => {
         postReview(booking_id, booking_type, comment.value)

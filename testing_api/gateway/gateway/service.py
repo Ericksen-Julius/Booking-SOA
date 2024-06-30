@@ -224,16 +224,16 @@ class GatewayService(object):
             error_message = str(e)
             return 500,self.header, json.dumps({'error': error_message})
     
-    # @http("GET", "/reviewProvider/<string:provider_name>")
-    # def get_information_provider(self, request, provider_name):
-    #     try:
-    #         result = self.review_rpc.get_information_provider(provider_name=provider_name)
-    #         if(result['status'] == 200):
-    #             return (result['status'],self.header,json.dumps(result['data']))
-    #         return 500, self.header, json.dumps(result['error'])
-    #     except Exception as e:
-    #         error_message = str(e)
-    #         return 500,self.header, json.dumps({'error': error_message})
+    @http("GET", "/reviewProvider/<string:provider_name>")
+    def get_information_provider(self, request, provider_name):
+        try:
+            result = self.review_rpc.get_information_provider(provider_name=provider_name)
+            if(result['status'] == 200):
+                return (result['status'],self.header,json.dumps(result['data']))
+            return 500, self.header, json.dumps(result['error'])
+        except Exception as e:
+            error_message = str(e)
+            return 500,self.header, json.dumps({'error': error_message})
         
     @http("GET", "/reviewRating/<string:provider_name>")
     def get_rating_provider(self, request, provider_name):

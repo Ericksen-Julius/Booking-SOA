@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 booking += `
                     <div class="col-lg-4">
                         <div class="booking-item">
-                            <img src="./assets/hotel.jpeg" alt="Provider Image" class="provider-img">
+                            <img src="./assets/booking.png" alt="Provider Image" class="provider-img">
                             <div class="flex-grow-1 d-flex flex-column">
                                 <div class="booking-code">Booking Code: ${element.booking_code}</div>
                                 <div>Type: ${element.booking_type}</div>
