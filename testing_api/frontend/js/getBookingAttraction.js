@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const count = document.getElementById('count')
     const ticket_price_1 = document.getElementById('ticket_price_1')
     const submitButton = document.getElementById('book')
-    let service_url = ''
+    let service_url = 'http://3.217.250.166' 
     let ticketPriceValue = 0
     let totalPriceValue = 0
     let providerName = 'Dufan'
@@ -49,22 +49,22 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
     async function getTicketData() {
-        try {
-            const response = await fetch(`http://107.20.145.163:8003/atraksi/${service_id}/attractioname/-/minprice/-/maxprice/-`, {
-                method: 'GET',
-            });
+        // try {
+        //     const response = await fetch(`http://107.20.145.163:8003/atraksi/${service_id}/attractioname/-/minprice/-/maxprice/-`, {
+        //         method: 'GET',
+        //     });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const result = await response.json()
-            providerName = result.data.service_name
-            provider_name.innerHTML = result.data.service_name
-            service_url = result.data.atraksi_url
+        //     if (!response.ok) {
+        //         throw new Error(`HTTP error! Status: ${response.status}`);
+        //     }
+        //     const result = await response.json()
+        //     providerName = result.data.service_name
+        //     provider_name.innerHTML = result.data.service_name
+        //     service_url = result.data.atraksi_url
 
-        } catch (error) {
-            console.error('Error:', error);
-        }
+        // } catch (error) {
+        //     console.error('Error:', error);
+        // }
 
         try {
             const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         } catch (error) {
             console.error('Error:', error);
         }
-
         try {
             const url = `${service_url}/api/atrkasi/`
             const response = await fetch(`http://3.217.250.166:8003/api/atraksi`, {

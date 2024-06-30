@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var containerBooking = document.getElementById('containerList');
 
     async function getBookingData() {
+        console.log('Fetching data...');
         try {
             const url = `http://3.226.141.243:8004/booking/`
             const response = await fetch('http://localhost:8000/booking/1', {
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 booking += `
                     <div class="col-lg-4">
                         <div class="booking-item">
-                            <img src="./assets/booking.png" alt="Provider Image" class="provider-img">
+                            <img src="./assets/electronic-ticket.png" alt="Provider Image" class="provider-img">
                             <div class="flex-grow-1 d-flex flex-column">
                                 <div class="booking-code">Booking Code: ${element.booking_code}</div>
                                 <div>Type: ${element.booking_type}</div>

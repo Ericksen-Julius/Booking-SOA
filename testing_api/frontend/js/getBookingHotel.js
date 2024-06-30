@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const total_night = document.getElementById('total_night')
     const count = document.getElementById('count')
     const room_price_1 = document.getElementById('room_price1')
-    let service_url = ''
+    let service_url = 'http://3.215.46.161:8011'
     const submitButton = document.getElementById('book')
     let roomPriceValue = 0
     let counterValue = 1
@@ -63,23 +63,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     async function getRoomData() {
-        try {
-            const response = await fetch(`http://107.20.145.163:8003/hotel/${service_id}/people/-/room/-/minprice/1/maxprice/-`, {
-                method: 'GET',
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const result = await response.json()
-            console.log(result)
-            provider_name.innerHTML = result.data.service_name
-            providerName = result.data.service_name
-            service_url = result.data.hotel_url
-            console.log(service_url)
-            console.log("cek")
-        } catch (error) {
-            console.error('Error:', error);
-        }
+        // try {
+        //     const response = await fetch(`http://107.20.145.163:8003/hotel/${service_id}/people/-/room/-/minprice/1/maxprice/-`, {
+        //         method: 'GET',
+        //     });
+        //     if (!response.ok) {
+        //         throw new Error(`HTTP error! Status: ${response.status}`);
+        //     }
+        //     const result = await response.json()
+        //     console.log(result)
+        //     provider_name.innerHTML = result.data.service_name
+        //     providerName = result.data.service_name
+        //     service_url = result.data.hotel_url
+        //     console.log(service_url)
+        //     console.log("cek")
+        // } catch (error) {
+        //     console.error('Error:', error);
+        // }
 
         try {
             const urlReview = `http://3.226.141.243:8004/reviewRating/${providerName}`
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function () {
             service_id: service_id
         };
         try {
-            const response1 = await fetch('http://localhost:8000/booking', {
+            const response1 = await fetch('http://3.226.141.243:8004/booking', {
                 method: 'POST',
                 body: JSON.stringify(data2)
             });
